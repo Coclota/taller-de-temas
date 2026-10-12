@@ -11,7 +11,8 @@ Labs, como Place y Benito, con lo que pide Killo:
 - **Cuentas** como en las demás apps (la misma cuenta Cuclynx).
 - Crear temas y **guardarlos** en la cuenta.
 - Una **galería** donde los demás los ven, los **valoran** y los **descargan**.
-- **Más estilos y más pegatinas**, y otras mejoras (apartado 6).
+- **Más estilos y más pegatinas**, y otras mejoras (apartado 6). Killo las quiere **todas**.
+- **Totalmente gratis, sin membresía.** Se mantiene con anuncios (apartado 8).
 
 Se mantiene todo lo que hace hoy el Taller. No se quita ninguna función.
 
@@ -99,7 +100,7 @@ Hoy hay 16 emojis. Propongo:
 - **Por comprobar**: si los emojis se ven bien al dibujar el PNG en el móvil. Si no, se sustituyen por las
   pegatinas propias. Las propias también evitan problemas de derechos con los dibujos de emojis de cada marca.
 
-### Otras ideas mías
+### Otras ideas (todas aprobadas por Killo)
 1. **Reto de la semana**: Brubru propone un tema («Otoño», «Mi pueblo», «Retro»…) y la galería tiene su apartado
    para ese reto, con los mejor valorados.
 2. **Temas de fechas**: Navidad, Carnaval, Semana Santa, feria, Halloween, verano… que salen solos en Inicio.
@@ -119,12 +120,38 @@ Enlaces `https` a productos, como El mercadillo de Place:
 - **A juego con tu tema**: fundas de móvil, alfombrillas de ratón, láminas y pósteres impresos con tu fondo.
 - **Para el escritorio**: teclados y ratones de colores, soportes de móvil, luces LED (enlaces de afiliado, marcados
   como tales).
-- **Packs de temas especiales** y **membresía sin anuncios**: son cosas digitales dentro de la app, así que antes de
-  publicar en Google Play tienen que ir por **Google Play Billing**. Primera versión: no.
+- **Sin packs de pago ni membresía**: la app es totalmente gratis (decisión de Killo). Todo lo de la tienda son
+  enlaces a productos físicos fuera de la app.
 
 Ningún precio sin fuente y fecha.
 
-## 8. Técnica
+## 8. Anuncios (la app es gratis)
+
+Decisión de Killo: **sin membresía**. La app se mantiene con anuncios, explicados con cariño.
+
+1. **Un anuncio por tema creado o editado**: al guardar, sale un aviso de Brubru antes del anuncio, por ejemplo:
+   «¡Chacho! Esta app es gratis. Cada tema que creas o editas trae un anuncio, y eso nos ayuda a mejorarla.
+   ¡Gracias por echar una mano!». Después del anuncio, el tema queda guardado igual (el anuncio nunca bloquea
+   guardar ni descargar).
+2. **Botón «Ver un anuncio para colaborar»** en Inicio y Cuenta: solo si la persona quiere. Brubru da las gracias
+   y suma a un contador de **corazones de colaborador**, con una medalla en el perfil.
+
+Cómo se hace, en dos pasos:
+- **Ahora (Expo Go)**: anuncios propios, como Benito (`benito_ads`): tabla `temas_ads` con título, texto, imagen y
+  enlace `https`, que añade Killo. Funcionan en Expo Go. Un anuncio a pantalla completa con cuenta atrás de 5
+  segundos y botón de cerrar.
+- **Al compilar para Google Play**: Google AdMob (`react-native-google-mobile-ads`). AdMob **no funciona en Expo Go**,
+  necesita la app compilada. Los anuncios propios se quedan de respaldo cuando AdMob no tiene anuncio.
+
+Por comprobar antes de AdMob:
+- En la UE hace falta pedir **consentimiento** para anuncios personalizados (formulario de Google, UMP). Si no
+  acepta, anuncios no personalizados.
+- El botón de colaborar usa anuncios «con recompensa». Google pide dar algo a cambio: los corazones y la medalla
+  sirven para eso. **Por comprobar** en las normas de AdMob.
+- Si la app se dirige también a niños, Google Play pide redes de anuncios aptas para familias. Propongo
+  **mayores de 13 años** para la cuenta y la galería.
+
+## 9. Técnica
 
 Se parte del código de **Cuclynx Place** (bandeja, mercadillo, donaciones, temas, idiomas, modo sencillo, Marianín
 para confirmar borrados, CI y pruebas de RLS) y se cambia lo de Place por lo de Temas.
@@ -142,7 +169,7 @@ para confirmar borrados, CI y pruebas de RLS) y se cambia lo de Place por lo de 
 - Poner el fondo directamente desde la app necesita la app compilada; en Expo Go se explica cómo ponerlo a mano.
 - El tema de Windows se usa en el ordenador: la app lo genera y la persona se lo pasa al PC.
 
-## 9. Base de datos (Supabase compartido, prefijo `temas_`)
+## 10. Base de datos (Supabase compartido, prefijo `temas_`)
 
 Migraciones numeradas en `supabase/migrations/`, su rollback en `supabase/rollback/` y pruebas de RLS en
 `tests/sql/rls.sh`. RLS en todas las tablas y validación en el servidor. **Sin código postal ni dirección**: esta
@@ -154,20 +181,26 @@ app no los necesita.
 | 002 bandeja | `temas_conversations`, `temas_messages`, `temas_message_reports`, `temas_blocks` (copiadas de Place) |
 | 003 mis temas | `temas_themes`: ajustes del tema validados en el servidor (tamaño, colores, nombres), privados por defecto |
 | 004 galería | publicar, `temas_ratings` (1 a 5), `temas_downloads`, `temas_reports`, ocultar tras 3 denuncias |
+| 005 anuncios | `temas_ads` (anuncios propios), corazones de colaborador |
+| 006 extras | retos de la semana, medallas del perfil de creador |
 
-## 10. Por fases (un PR cada una)
+## 11. Por fases (un PR cada una)
 
 1. **Esqueleto Cuclynx**: cuenta, apodo, pestañas, Cuenta con lemas, idiomas, diseños, modo sencillo, donar, tienda,
    bandeja, Brevo, borrar cuenta, CI. (Migraciones 001 y 002.)
 2. **El taller**: el editor del Taller en la app, con vista previa y descargas, y Mis temas. (Migración 003.)
 3. **Galería**: publicar, valorar, descargar, copiar, denunciar y bloquear. (Migración 004.)
 4. **Brubru**: dibujo, icono y pantalla de carga.
-5. **Más estilos y pegatinas**, y las ideas que Killo elija.
+5. **Anuncios**: aviso de Brubru, anuncio por tema y botón de colaborar. (Migración 005.)
+6. **Más estilos y pegatinas**.
+7. **Las ideas**: reto de la semana, temas de fechas, colores de tu foto, pase de fondos de Windows, bloqueo e
+   inicio a juego y tablet, iconos y cursores, perfil de creador. (Migración 006.)
+8. **AdMob y Google Play**, cuando se compile la app.
 
 Se fusiona solo cuando Killo diga, y después le digo qué migración ejecutar en el SQL Editor de Supabase.
 
-## 11. Preguntas para Killo
+## 12. Preguntas para Killo
 
 1. ¿Creas el repositorio privado `cuclynx-temas` en GitHub? (necesario para empezar)
 2. ¿Brubru dice «¡Chacho!» u otra expresión?
-3. ¿Qué ideas del apartado 6 entran?
+3. ¿Cuenta y galería para mayores de 13 años?
