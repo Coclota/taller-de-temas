@@ -1,0 +1,753 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Crea temas para Windows y fondos e iconos para el móvil de forma sencilla.">
+<meta name="theme-color" content="#FF6B3D">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Taller de Temas">
+<title>Taller de Temas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;800&family=Pacifico&family=Bebas+Neue&display=swap">
+<script src="vendor/jszip.min.js"></script>
+<style>
+/* Layout: banda de temas listos arriba; debajo, controles a la izquierda y vista previa del dispositivo a la derecha (se apilan en el móvil). */
+:root{
+  --bg:#F2F5FA; --surface:#FFFFFF; --sunken:#E8EDF5; --fg:#1A1F2E; --muted:#5B6478; --line:#D7DEEA;
+  --accent:#FF6B3D; --accent-ink:#FFFFFF; --ok:#16A34A;
+  --display:"Fredoka","Trebuchet MS",system-ui,sans-serif;
+  --body:"Nunito","Segoe UI",system-ui,sans-serif;
+  --radius:16px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#10131B; --surface:#181C27; --sunken:#202636; --fg:#EEF1F8; --muted:#A3ADC2; --line:#2C3447;
+  --accent:#FF8A62; --accent-ink:#1A0E08; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10131B; --surface:#181C27; --sunken:#202636; --fg:#EEF1F8; --muted:#A3ADC2; --line:#2C3447;
+  --accent:#FF8A62; --accent-ink:#1A0E08; color-scheme:dark}
+html{-webkit-text-size-adjust:100%}
+body{margin:0}
+img{max-width:100%}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.45}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:20px 48px;display:flex;flex-direction:column;gap:18px}
+header{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font-family:var(--display);font-weight:700;font-size:2rem;margin:0;letter-spacing:.2px}
+h1 span{color:var(--accent)}
+.sub{margin:2px 0 0;color:var(--muted);max-width:60ch}
+.mode{display:inline-flex;background:var(--sunken);border-radius:999px;padding:4px;gap:4px}
+.mode button{border:0;background:transparent;color:var(--muted);font:600 14px var(--body);padding:8px 16px;border-radius:999px;cursor:pointer}
+.mode button[aria-pressed="true"]{background:var(--surface);color:var(--fg);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+h2{font-family:var(--display);font-weight:600;font-size:1.05rem;margin:0}
+.presets{display:flex;gap:12px;overflow-x:auto;padding-bottom:6px;scrollbar-width:thin}
+.preset{flex:0 0 auto;width:118px;border:2px solid transparent;border-radius:var(--radius);background:var(--surface);padding:6px;cursor:pointer;display:flex;flex-direction:column;gap:6px;color:var(--fg);font:600 13px var(--body);text-align:left}
+.preset canvas{width:100%;aspect-ratio:16/10;border-radius:10px;display:block}
+.preset:hover{border-color:var(--line)}
+.preset[aria-pressed="true"]{border-color:var(--accent)}
+.main{display:grid;grid-template-columns:minmax(0,370px) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:860px){.main{grid-template-columns:minmax(0,1fr)}.preview{order:-1}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px;display:flex;flex-direction:column;gap:18px;min-width:0}
+.group{display:flex;flex-direction:column;gap:10px}
+.label{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;padding:8px 14px;font:600 14px var(--body);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.swatch{display:flex;align-items:center;gap:8px;font-weight:600}
+input[type=color]{width:46px;height:38px;border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:3px;cursor:pointer}
+input[type=text],select{font:inherit;color:var(--fg);background:var(--sunken);border:1px solid var(--line);border-radius:10px;padding:9px 12px;min-width:0;flex:1}
+input[type=range]{flex:1;accent-color:var(--accent);min-width:120px}
+.big{border:0;border-radius:12px;padding:12px 16px;font:700 15px var(--display);cursor:pointer;background:var(--accent);color:var(--accent-ink)}
+.ghost{border:1px solid var(--line);border-radius:12px;padding:10px 14px;font:600 14px var(--body);cursor:pointer;background:var(--surface);color:var(--fg)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.stickers{display:grid;grid-template-columns:repeat(8,1fr);gap:6px}
+.stickers button{font-size:22px;line-height:1;padding:8px 0;border-radius:10px;border:1px solid var(--line);background:var(--surface);cursor:pointer}
+.stickers button[aria-pressed="true"]{border-color:var(--accent);background:var(--sunken)}
+.adv[hidden]{display:none!important}
+.preview{display:flex;flex-direction:column;gap:12px;min-width:0;position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px)}
+@media (max-width:860px){.preview{position:static}}
+.stage{background:var(--sunken);border-radius:var(--radius);padding:20px;display:flex;justify-content:center;align-items:center;min-height:300px}
+/* Monitor */
+.monitor{width:100%;max-width:720px}
+.screen{position:relative;border:10px solid #1C1F27;border-radius:12px;overflow:hidden;aspect-ratio:16/9;background:#000}
+.screen canvas,.phone canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.stand{width:22%;height:22px;margin:0 auto;background:linear-gradient(#2A2E38,#1C1F27);clip-path:polygon(18% 0,82% 0,100% 100%,0 100%)}
+.desk-icons{position:absolute;left:2%;top:4%;display:flex;flex-direction:column;gap:5%;height:60%}
+.desk-icon{width:28px;display:flex;flex-direction:column;align-items:center;gap:2px;font:600 8px var(--body);color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.7)}
+.desk-icon i{width:22px;height:22px;border-radius:5px;display:block}
+.window{position:absolute;right:8%;top:14%;width:38%;height:46%;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.35);overflow:hidden;display:flex;flex-direction:column}
+.window .bar{height:16%;display:flex;align-items:center;padding:0 6%;font:700 9px var(--body)}
+.window .body{flex:1;padding:6%;display:flex;flex-direction:column;gap:7%}
+.window .line{height:7%;border-radius:4px;opacity:.5}
+.window .btn{width:36%;height:14%;border-radius:4px;margin-top:auto}
+.taskbar{position:absolute;left:0;right:0;bottom:0;height:8%;display:flex;align-items:center;justify-content:center;gap:1.2%;backdrop-filter:blur(8px)}
+.taskbar i{width:3.2%;aspect-ratio:1;border-radius:4px;display:block;opacity:.85}
+.taskbar i.start{opacity:1}
+.taskbar .clock{position:absolute;right:2%;font:600 9px var(--body)}
+/* Teléfono */
+.phone{position:relative;width:min(270px,70vw);aspect-ratio:1080/2400;border:9px solid #1C1F27;border-radius:36px;overflow:hidden;background:#000}
+.notch{position:absolute;top:1.4%;left:50%;transform:translateX(-50%);width:28%;height:2.6%;background:#0B0C10;border-radius:999px;z-index:2}
+.status{position:absolute;top:1.6%;left:8%;right:8%;display:flex;justify-content:space-between;font:700 10px var(--body);z-index:1}
+.lockclock{position:absolute;top:9%;left:0;right:0;text-align:center;font:600 48px var(--display);letter-spacing:1px}
+.lockdate{position:absolute;top:21.5%;left:0;right:0;text-align:center;font:700 11px var(--body)}
+.grid{position:absolute;left:7%;right:7%;bottom:15%;display:grid;grid-template-columns:repeat(4,1fr);gap:14px 0;justify-items:center}
+.app{width:42px;display:flex;flex-direction:column;align-items:center;gap:3px;font:600 8px var(--body);color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6)}
+.app i{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:18px;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.dock{position:absolute;left:5%;right:5%;bottom:3%;height:9%;border-radius:22px;display:flex;justify-content:space-around;align-items:center;backdrop-filter:blur(10px)}
+.dock i{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:18px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.export{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px;display:flex;flex-direction:column;gap:12px}
+.export .row{gap:8px}
+.note{font-size:13px;color:var(--muted);margin:0}
+.toast{min-height:20px;font-size:14px;font-weight:700;color:var(--ok);margin:0}
+.toast.err{color:var(--accent)}
+.saved{display:flex;gap:10px;flex-wrap:wrap}
+.saved .item{display:flex;align-items:center;gap:6px;background:var(--sunken);border-radius:999px;padding:4px 6px 4px 4px}
+.saved .item button{border:0;background:transparent;color:var(--fg);font:600 13px var(--body);cursor:pointer;display:flex;align-items:center;gap:6px;padding:2px 4px}
+.saved .item .dot{width:22px;height:22px;border-radius:50%;display:block}
+.saved .item .x{color:var(--muted);font-size:16px;padding:0 6px}
+.iconrow{display:flex;gap:10px;flex-wrap:wrap}
+.iconrow img{width:44px;height:44px}
+#cursorPreview{background:var(--sunken);border-radius:10px;padding:6px;width:48px;height:48px}
+.chip.play::before{content:"▶ ";font-size:11px}
+.desk-icon img{width:26px;height:26px;display:block}
+.how{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px}
+.how summary{cursor:pointer;font-family:var(--display);font-weight:600}
+.how ol{margin:8px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:4px;max-width:70ch}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Taller de <span>Temas</span></h1>
+      <p class="sub">Elige un tema, cambia colores, dibujos y texto, y descárgalo para tu ordenador con Windows o para tu móvil.</p>
+    </div>
+    <div class="mode" role="group" aria-label="Nivel de opciones">
+      <button id="modeSimple" type="button" aria-pressed="true">Sencillo</button>
+      <button id="modeAdv" type="button" aria-pressed="false">Más opciones</button>
+    </div>
+  </header>
+
+  <section class="group" aria-labelledby="pTitle">
+    <h2 id="pTitle">1. Empieza con un tema</h2>
+    <div class="presets" id="presets"></div>
+  </section>
+
+  <div class="main">
+    <div class="panel" aria-label="Editor del tema">
+      <div class="group">
+        <span class="label">Estilo del fondo</span>
+        <div class="chips" id="styles"></div>
+      </div>
+
+      <div class="group">
+        <span class="label">Colores</span>
+        <div class="row">
+          <label class="swatch"><input id="c1" type="color"> Color 1</label>
+          <label class="swatch"><input id="c2" type="color"> Color 2</label>
+          <button id="surprise" class="big" type="button">Sorpréndeme</button>
+        </div>
+        <div class="row adv" hidden>
+          <label for="angle" class="label" style="min-width:70px">Ángulo</label>
+          <input id="angle" type="range" min="0" max="360" step="5">
+        </div>
+        <div class="row adv" hidden>
+          <button id="reshuffle" class="ghost" type="button">Recolocar formas</button>
+        </div>
+      </div>
+
+      <div class="group" id="photoGroup" hidden>
+        <span class="label">Tu foto</span>
+        <div class="row">
+          <input id="photo" type="file" accept="image/*">
+        </div>
+        <div class="row">
+          <label for="tint" class="label" style="min-width:70px">Filtro</label>
+          <input id="tint" type="range" min="0" max="80" step="5">
+        </div>
+      </div>
+
+      <div class="group">
+        <span class="label">Pegatinas</span>
+        <div class="stickers" id="stickers"></div>
+        <div class="row">
+          <label for="stickerCount" class="label" style="min-width:70px">Cantidad</label>
+          <input id="stickerCount" type="range" min="0" max="16" step="1">
+        </div>
+        <div class="row adv" hidden>
+          <label for="stickerSize" class="label" style="min-width:70px">Tamaño</label>
+          <input id="stickerSize" type="range" min="3" max="14" step="1">
+        </div>
+      </div>
+
+      <div class="group">
+        <span class="label">Texto en el fondo</span>
+        <input id="text" type="text" maxlength="40" placeholder="Tu nombre o una frase (opcional)">
+        <div class="row">
+          <select id="font" aria-label="Letra">
+            <option value="Fredoka">Redondeada</option>
+            <option value="Pacifico">Manuscrita</option>
+            <option value="Bebas Neue">Alta y fina</option>
+            <option value="Nunito">Sencilla</option>
+          </select>
+          <select id="textPos" aria-label="Posición del texto">
+            <option value="top">Arriba</option>
+            <option value="center">Centro</option>
+            <option value="bottom">Abajo</option>
+          </select>
+        </div>
+        <div class="row adv" hidden>
+          <label class="swatch"><input id="textColor" type="color"> Color del texto</label>
+          <label for="textSize" class="label">Tamaño</label>
+          <input id="textSize" type="range" min="4" max="16" step="1">
+        </div>
+      </div>
+
+      <div class="group">
+        <span class="label">Color de acento y modo</span>
+        <div class="row">
+          <label class="swatch"><input id="accent" type="color"> Acento</label>
+          <div class="chips" role="group" aria-label="Modo de color">
+            <button class="chip" id="dark" type="button" aria-pressed="true">Oscuro</button>
+            <button class="chip" id="light" type="button" aria-pressed="false">Claro</button>
+          </div>
+        </div>
+        <p class="note">El acento colorea la barra de tareas, los botones y los iconos.</p>
+      </div>
+
+      <div class="group">
+        <span class="label">Barra de tareas (Windows)</span>
+        <div class="chips" role="group" aria-label="Color de la barra de tareas">
+          <button class="chip" id="tbNeutral" type="button" aria-pressed="true">Según el modo</button>
+          <button class="chip" id="tbAccent" type="button" aria-pressed="false">Color de acento</button>
+        </div>
+        <p class="note">Windows solo deja pintar la barra de tareas con el color de acento, y en modo oscuro. Si eliges esta opción, el tema activa el modo oscuro.</p>
+      </div>
+
+      <div class="group">
+        <span class="label">Iconos</span>
+        <div class="chips" id="iconShapes"></div>
+        <div class="row"><label class="swatch"><input id="iconColor" type="color"> Color de los iconos</label></div>
+        <div class="iconrow" id="iconPreview"></div>
+      </div>
+
+      <div class="group">
+        <span class="label">Cursor (Windows)</span>
+        <div class="chips" id="cursorStyles"></div>
+        <div class="row">
+          <label class="swatch"><input id="cursorColor" type="color"> Color</label>
+          <img id="cursorPreview" alt="Vista del cursor" width="48" height="48">
+        </div>
+        <p class="note">Pasa el ratón por la pantalla del ordenador de la vista previa para probarlo.</p>
+      </div>
+
+      <div class="group">
+        <span class="label">Sonidos (Windows)</span>
+        <div class="chips" id="soundPacks"></div>
+        <div class="chips" id="soundTests" aria-label="Escuchar sonidos"></div>
+      </div>
+
+      <div class="group">
+        <span class="label">Nombre del tema</span>
+        <div class="row">
+          <input id="name" type="text" maxlength="30">
+          <button id="save" class="ghost" type="button">Guardar</button>
+        </div>
+        <div class="saved" id="saved"></div>
+      </div>
+    </div>
+
+    <div class="preview">
+      <div class="tabs" role="group" aria-label="Dispositivo">
+        <button class="chip" id="tabPc" type="button" aria-pressed="true">Ordenador</button>
+        <button class="chip" id="tabPhone" type="button" aria-pressed="false">Móvil</button>
+      </div>
+      <div class="stage">
+        <div class="monitor" id="pcView">
+          <div class="screen">
+            <canvas id="pcCanvas" width="1280" height="720"></canvas>
+            <div class="desk-icons" id="deskIcons"></div>
+            <div class="window" id="win"><div class="bar">Mis documentos</div><div class="body"><div class="line"></div><div class="line" style="width:70%"></div><div class="line" style="width:85%"></div><div class="btn"></div></div></div>
+            <div class="taskbar" id="taskbar"><i class="start"></i><i></i><i></i><i></i><i></i><span class="clock">10:24</span></div>
+          </div>
+          <div class="stand"></div>
+        </div>
+        <div class="phone" id="phoneView" hidden>
+          <canvas id="phoneCanvas" width="540" height="1200"></canvas>
+          <div class="notch"></div>
+          <div class="status"><span>10:24</span><span>5G ▮▮▮</span></div>
+          <div class="lockclock">10:24</div>
+          <div class="lockdate">lunes, 12 de octubre</div>
+          <div class="grid" id="appGrid"></div>
+          <div class="dock" id="dock"></div>
+        </div>
+      </div>
+
+      <div class="export">
+        <h2>2. Descárgalo</h2>
+        <div class="row">
+          <button class="big" id="dlWin" type="button">Tema para Windows (.zip)</button>
+          <button class="big" id="dlPhone" type="button">Fondos para móvil (.zip)</button>
+        </div>
+        <div class="row">
+          <button class="ghost" id="dlPcPng" type="button">Solo fondo PC (PNG)</button>
+          <button class="ghost" id="dlPhonePng" type="button">Solo fondo móvil (PNG)</button>
+        </div>
+        <p class="toast" id="toast" role="status" aria-live="polite"></p>
+      </div>
+
+      <details class="how">
+        <summary>Cómo ponerlo en cada dispositivo</summary>
+        <ol>
+          <li><b>Windows 10 y 11:</b> descomprime el .zip en <i>Imágenes\TallerTemas</i> y haz doble clic en el archivo <i>.theme</i>. Se aplican el fondo, el color de acento y el modo claro u oscuro.</li>
+          <li><b>Android:</b> abre la foto en Galería, toca los tres puntos y elige <i>Establecer como fondo</i>. En Android 12 o superior, los colores del sistema se adaptan solos al fondo.</li>
+          <li><b>iPhone:</b> guarda la foto en Fotos, ábrela, toca compartir y elige <i>Usar como fondo</i>. iPhone no permite temas completos, solo fondos.</li>
+        </ol>
+      </details>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  // ---------- Datos ----------
+  const STYLES = [
+    ["gradient","Degradado"],["solid","Liso"],["bubbles","Burbujas"],["waves","Olas"],
+    ["mountains","Montañas"],["dots","Lunares"],["stripes","Rayas"],["stars","Estrellas"],["photo","Mi foto"]
+  ];
+  const STICKERS = ["⭐","❤️","🌈","🐱","🐶","🦄","⚽","🎮","🌸","🍀","🚀","🌙","☀️","🎵","🦋","🍕"];
+  const PRESETS = [
+    {name:"Océano",style:"waves",c1:"#0EA5E9",c2:"#1E3A8A",angle:180,sticker:"",count:0,text:"",accent:"#38BDF8",dark:true},
+    {name:"Bosque",style:"mountains",c1:"#A7F3D0",c2:"#14532D",angle:180,sticker:"",count:0,text:"",accent:"#22C55E",dark:true},
+    {name:"Atardecer",style:"mountains",c1:"#FDBA74",c2:"#7C2D92",angle:180,sticker:"",count:0,text:"",accent:"#F97316",dark:true},
+    {name:"Espacio",style:"stars",c1:"#0B1026",c2:"#3B1D6E",angle:160,sticker:"🚀",count:2,text:"",accent:"#A78BFA",dark:true},
+    {name:"Caramelo",style:"dots",c1:"#FDE2EF",c2:"#F472B6",angle:135,sticker:"🦄",count:5,text:"",accent:"#EC4899",dark:false},
+    {name:"Burbujas",style:"bubbles",c1:"#FDE68A",c2:"#F97316",angle:135,sticker:"",count:0,text:"",accent:"#F59E0B",dark:false},
+    {name:"Verdiblanco",style:"stripes",c1:"#00954C",c2:"#FFFFFF",angle:90,sticker:"⚽",count:3,text:"",accent:"#00954C",dark:false},
+    {name:"Minimal",style:"gradient",c1:"#E5E7EB",c2:"#9CA3AF",angle:160,sticker:"",count:0,text:"",accent:"#475569",dark:false},
+  ];
+  const BASE = {style:"gradient",c1:"#0EA5E9",c2:"#1E3A8A",angle:135,seed:7,sticker:"",count:0,stickerSize:7,
+    text:"",font:"Fredoka",textPos:"center",textColor:"#FFFFFF",textSize:9,accent:"#38BDF8",dark:true,tint:30,name:"Mi tema",
+    taskbarAccent:false,iconShape:"rounded",iconColor:"",cursorStyle:"classic",cursorColor:"#FFFFFF",soundPack:"bells"};
+  let S = {...BASE, ...PRESETS[0], seed:7, name:"Océano"};
+  let photoImg = null;
+
+  // ---------- Utilidades de color ----------
+  const hex2rgb = h => { h = h.replace("#",""); if (h.length===3) h=[...h].map(c=>c+c).join(""); const n=parseInt(h,16); return [n>>16&255,n>>8&255,n&255]; };
+  const rgb2hex = (r,g,b) => "#"+[r,g,b].map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,"0")).join("");
+  const mix = (a,b,t) => { const A=hex2rgb(a),B=hex2rgb(b); return rgb2hex(A[0]+(B[0]-A[0])*t,A[1]+(B[1]-A[1])*t,A[2]+(B[2]-A[2])*t); };
+  const rgba = (h,a) => { const [r,g,b]=hex2rgb(h); return `rgba(${r},${g},${b},${a})`; };
+  const lum = h => { const c=hex2rgb(h).map(v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)}); return .2126*c[0]+.7152*c[1]+.0722*c[2]; };
+  const inkOn = h => lum(h) > .45 ? "#111318" : "#FFFFFF";
+  const rng = seed => () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  const hsl2hex = (h,s,l) => { s/=100;l/=100; const k=n=>(n+h/30)%12, a=s*Math.min(l,1-l), f=n=>l-a*Math.max(-1,Math.min(k(n)-3,Math.min(9-k(n),1))); return rgb2hex(255*f(0),255*f(8),255*f(4)); };
+
+  // ---------- Dibujo del fondo (independiente de la resolución) ----------
+  function linear(ctx,w,h,angle,a,b){
+    const r = angle*Math.PI/180, cx=w/2, cy=h/2, L=Math.abs(w*Math.sin(r))+Math.abs(h*Math.cos(r));
+    const dx=Math.sin(r)*L/2, dy=-Math.cos(r)*L/2;
+    const g = ctx.createLinearGradient(cx-dx,cy-dy,cx+dx,cy+dy); g.addColorStop(0,a); g.addColorStop(1,b); return g;
+  }
+  function drawWallpaper(ctx,w,h,st){
+    const R = rng(st.seed*9973+ (w>h?1:2)), m = Math.min(w,h), M = Math.max(w,h);
+    ctx.save(); ctx.clearRect(0,0,w,h);
+    switch(st.style){
+      case "solid": ctx.fillStyle=st.c1; ctx.fillRect(0,0,w,h); break;
+      case "gradient": ctx.fillStyle=linear(ctx,w,h,st.angle,st.c1,st.c2); ctx.fillRect(0,0,w,h); break;
+      case "bubbles": {
+        ctx.fillStyle=linear(ctx,w,h,st.angle,st.c1,st.c2); ctx.fillRect(0,0,w,h);
+        for(let i=0;i<26;i++){ const r=m*(.03+R()*.16); ctx.beginPath(); ctx.arc(R()*w,R()*h,r,0,7);
+          ctx.fillStyle=rgba("#FFFFFF",.08+R()*.18); ctx.fill(); }
+        break; }
+      case "waves": {
+        ctx.fillStyle=linear(ctx,w,h,st.angle,st.c1,st.c2); ctx.fillRect(0,0,w,h);
+        for(let k=0;k<5;k++){ const base=h*(.45+k*.12), amp=m*(.03+.015*k), len=w/(1.2+R()*1.3), ph=R()*7;
+          ctx.beginPath(); ctx.moveTo(0,h); for(let x=0;x<=w;x+=w/120) ctx.lineTo(x, base+Math.sin(x/len*6.28+ph)*amp);
+          ctx.lineTo(w,h); ctx.closePath(); ctx.fillStyle=rgba(mix(st.c2,"#000000",.15*k),.35+k*.12); ctx.fill(); }
+        break; }
+      case "mountains": {
+        ctx.fillStyle=linear(ctx,w,h,180,st.c1,mix(st.c1,st.c2,.55)); ctx.fillRect(0,0,w,h);
+        ctx.beginPath(); ctx.arc(w*(.25+R()*.5), h*.32, m*.09, 0, 7); ctx.fillStyle=rgba("#FFFFFF",.75); ctx.fill();
+        for(let k=0;k<4;k++){ const top=h*(.42+k*.12); ctx.beginPath(); ctx.moveTo(0,h);
+          let x=0; ctx.lineTo(0, top+R()*h*.08);
+          while(x<w){ x+=w*(.08+R()*.14); ctx.lineTo(x, top - R()*h*.14); x+=w*(.06+R()*.1); ctx.lineTo(x, top + R()*h*.06); }
+          ctx.lineTo(w,h); ctx.closePath(); ctx.fillStyle=mix(st.c1,st.c2,.45+k*.18); ctx.fill(); }
+        break; }
+      case "dots": {
+        ctx.fillStyle=st.c1; ctx.fillRect(0,0,w,h); const gap=m/9, r=gap*.18;
+        ctx.fillStyle=st.c2; for(let y=gap/2,row=0;y<h+gap;y+=gap,row++) for(let x=(row%2?gap/2:0);x<w+gap;x+=gap){ ctx.beginPath(); ctx.arc(x,y,r,0,7); ctx.fill(); }
+        break; }
+      case "stripes": {
+        ctx.fillStyle=st.c1; ctx.fillRect(0,0,w,h); ctx.save(); ctx.translate(w/2,h/2); ctx.rotate((st.angle-90)*Math.PI/180);
+        const band=m/10; ctx.fillStyle=st.c2; for(let x=-M*1.5;x<M*1.5;x+=band*2) ctx.fillRect(x,-M*1.5,band,M*3); ctx.restore();
+        break; }
+      case "stars": {
+        ctx.fillStyle=linear(ctx,w,h,st.angle,st.c1,st.c2); ctx.fillRect(0,0,w,h);
+        for(let i=0;i<260;i++){ const r=m*(R()<.92?.0015+R()*.002:.004+R()*.003); ctx.beginPath(); ctx.arc(R()*w,R()*h,r,0,7); ctx.fillStyle=rgba("#FFFFFF",.4+R()*.6); ctx.fill(); }
+        const g=ctx.createRadialGradient(w*.7,h*.3,0,w*.7,h*.3,m*.5); g.addColorStop(0,rgba(st.c2,.55)); g.addColorStop(1,rgba(st.c2,0)); ctx.fillStyle=g; ctx.fillRect(0,0,w,h);
+        break; }
+      case "photo": {
+        if(photoImg){ const s=Math.max(w/photoImg.width,h/photoImg.height), iw=photoImg.width*s, ih=photoImg.height*s;
+          ctx.drawImage(photoImg,(w-iw)/2,(h-ih)/2,iw,ih);
+          ctx.fillStyle=rgba(st.c1,st.tint/100); ctx.fillRect(0,0,w,h);
+        } else { ctx.fillStyle=linear(ctx,w,h,st.angle,st.c1,st.c2); ctx.fillRect(0,0,w,h);
+          ctx.fillStyle=rgba(inkOn(st.c1),.8); ctx.font=`700 ${m*.05}px Nunito, sans-serif`; ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.fillText("Elige una foto",w/2,h/2); }
+        break; }
+    }
+    // Pegatinas
+    if(st.sticker && st.count>0){
+      const SR = rng(st.seed*31+(w>h?5:9)); const size = m*st.stickerSize/100;
+      ctx.font = `${size}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`; ctx.textAlign="center"; ctx.textBaseline="middle";
+      for(let i=0;i<st.count;i++){ ctx.save(); const x=w*(.08+SR()*.84), y=h*(.08+SR()*.7); ctx.translate(x,y); ctx.rotate((SR()-.5)*.6);
+        ctx.shadowColor="rgba(0,0,0,.25)"; ctx.shadowBlur=size*.12; ctx.shadowOffsetY=size*.05; ctx.fillText(st.sticker,0,0); ctx.restore(); }
+    }
+    // Texto
+    if(st.text.trim()){
+      const fs = m*st.textSize/100; ctx.font = `${st.font==="Bebas Neue"?"400":"700"} ${fs}px "${st.font}", sans-serif`;
+      ctx.textAlign="center"; ctx.textBaseline="middle";
+      const y = st.textPos==="top" ? h*.18 : st.textPos==="bottom" ? h*.72 : h*.5;
+      ctx.shadowColor="rgba(0,0,0,.35)"; ctx.shadowBlur=fs*.15; ctx.shadowOffsetY=fs*.04;
+      ctx.fillStyle=st.textColor; ctx.fillText(st.text.trim(), w/2, y, w*.9);
+    }
+    ctx.restore();
+  }
+
+  // ---------- Referencias ----------
+  const $ = id => document.getElementById(id);
+  const pcCanvas=$("pcCanvas"), phoneCanvas=$("phoneCanvas");
+  const ids=["c1","c2","angle","stickerCount","stickerSize","text","font","textPos","textColor","textSize","accent","name","tint"];
+
+  // ---------- Construcción de la interfaz ----------
+  PRESETS.forEach((p,i)=>{
+    const b=document.createElement("button"); b.type="button"; b.className="preset"; b.dataset.i=i;
+    const c=document.createElement("canvas"); c.width=236; c.height=148; b.append(c, document.createTextNode(p.name));
+    b.addEventListener("click",()=>{ S={...BASE,...p,seed:S.seed,name:p.name,font:S.font,textPos:S.textPos,
+      taskbarAccent:S.taskbarAccent,iconShape:S.iconShape,cursorStyle:S.cursorStyle,cursorColor:S.cursorColor,soundPack:S.soundPack}; syncInputs(); render(); markPreset(i); });
+    $("presets").append(b);
+  });
+  STYLES.forEach(([k,label])=>{ const b=document.createElement("button"); b.type="button"; b.className="chip"; b.textContent=label; b.dataset.k=k;
+    b.addEventListener("click",()=>{ S.style=k; syncInputs(); render(); markPreset(-1); }); $("styles").append(b); });
+  [""].concat(STICKERS).forEach(s=>{ const b=document.createElement("button"); b.type="button"; b.textContent=s||"✕"; b.setAttribute("aria-label", s?`Pegatina ${s}`:"Sin pegatinas"); b.dataset.s=s;
+    b.addEventListener("click",()=>{ S.sticker=s; if(s && S.count===0) S.count=5; syncInputs(); render(); }); $("stickers").append(b); });
+
+  const APPS=[["📞","Teléfono"],["💬","Mensajes"],["📷","Cámara"],["🎵","Música"],["🗺️","Mapas"],["📅","Agenda"],["🎮","Juegos"],["⚙️","Ajustes"]];
+  APPS.forEach(([e,n])=>{ const d=document.createElement("div"); d.className="app"; d.innerHTML=`<i></i><span></span>`; d.querySelector("i").textContent=e; d.querySelector("span").textContent=n; $("appGrid").append(d); });
+  ["📞","💬","🌐","📷"].forEach(e=>{ const i=document.createElement("i"); i.textContent=e; $("dock").append(i); });
+  const DESK=[["pc","Este equipo"],["trash","Papelera"],["user","Usuario"],["globe","Red"]];
+  DESK.forEach(([k,n])=>{ const d=document.createElement("div"); d.className="desk-icon"; d.innerHTML='<img alt=""><span></span>'; d.dataset.k=k; d.querySelector("span").textContent=n; $("deskIcons").append(d); });
+
+  function markPreset(i){ document.querySelectorAll(".preset").forEach(b=>b.setAttribute("aria-pressed", String(Number(b.dataset.i)===i))); }
+
+  function syncInputs(){
+    ids.forEach(id=>{ const el=$(id); const v = id==="stickerCount"?S.count:S[id]; if(el.type==="file") return; el.value=v; });
+    document.querySelectorAll("#styles .chip").forEach(b=>b.setAttribute("aria-pressed", String(b.dataset.k===S.style)));
+    document.querySelectorAll("#stickers button").forEach(b=>b.setAttribute("aria-pressed", String(b.dataset.s===S.sticker)));
+    $("dark").setAttribute("aria-pressed", String(S.dark)); $("light").setAttribute("aria-pressed", String(!S.dark));
+    $("photoGroup").hidden = S.style!=="photo";
+    syncExtra();
+  }
+
+  ids.forEach(id=>$(id).addEventListener("input",e=>{
+    const el=e.target; const num=["angle","stickerCount","stickerSize","textSize","tint"].includes(id);
+    const key = id==="stickerCount"?"count":id; S[key] = num?Number(el.value):el.value;
+    if(id==="c1" || id==="c2") { S.accent = autoAccent(); $("accent").value=S.accent; markPreset(-1); }
+    if(id==="c1" || id==="c2" || id==="accent") { if(!S.iconColor) $("iconColor").value=S.accent; }
+    render();
+  }));
+  $("dark").addEventListener("click",()=>{S.dark=true;syncInputs();render();});
+  $("light").addEventListener("click",()=>{S.dark=false;syncInputs();render();});
+  $("reshuffle").addEventListener("click",()=>{S.seed=Math.floor(Math.random()*1e6);render();});
+  $("surprise").addEventListener("click",()=>{
+    const h=Math.floor(Math.random()*360), h2=(h+30+Math.floor(Math.random()*120))%360;
+    S.c1=hsl2hex(h,70+Math.random()*25,55+Math.random()*20); S.c2=hsl2hex(h2,65+Math.random()*30,25+Math.random()*25);
+    const pool=["gradient","bubbles","waves","mountains","dots","stripes","stars"]; if(S.style!=="photo") S.style=pool[Math.floor(Math.random()*pool.length)];
+    S.angle=Math.floor(Math.random()*72)*5; S.seed=Math.floor(Math.random()*1e6); S.accent=autoAccent(); S.dark = lum(S.c2)<.3;
+    syncInputs(); render(); markPreset(-1);
+  });
+  $("photo").addEventListener("change",e=>{
+    const f=e.target.files&&e.target.files[0]; if(!f) return; const r=new FileReader();
+    r.onload=()=>{ const img=new Image(); img.onload=()=>{photoImg=img; render();}; img.src=r.result; }; r.readAsDataURL(f);
+  });
+  function autoAccent(){ const a = lum(S.c1)>lum(S.c2)?S.c2:S.c1; const b = lum(a)>.7? mix(a,"#000000",.45) : lum(a)<.05? mix(a,"#FFFFFF",.4): a; return b; }
+
+  // Modo sencillo / más opciones
+  function setMode(adv){ $("modeSimple").setAttribute("aria-pressed",String(!adv)); $("modeAdv").setAttribute("aria-pressed",String(adv));
+    document.querySelectorAll(".adv").forEach(el=>el.hidden=!adv); try{localStorage.setItem("tt-mode",adv?"adv":"simple")}catch(e){} }
+  $("modeSimple").addEventListener("click",()=>setMode(false)); $("modeAdv").addEventListener("click",()=>setMode(true));
+
+  // Dispositivo
+  function setDevice(phone){ $("tabPc").setAttribute("aria-pressed",String(!phone)); $("tabPhone").setAttribute("aria-pressed",String(phone));
+    $("pcView").hidden=phone; $("phoneView").hidden=!phone; }
+  $("tabPc").addEventListener("click",()=>setDevice(false)); $("tabPhone").addEventListener("click",()=>setDevice(true));
+
+  // ---------- Iconos ----------
+  const SHAPES=[["rounded","Cuadrado suave"],["circle","Redondo"],["leaf","Hoja"],["square","Cuadrado"]];
+  function iconCol(){ return S.iconColor || S.accent; }
+  function shapeCss(s){ return s==="circle"?"50%":s==="leaf"?"50% 12% 50% 12%":s==="square"?"6px":"28%"; }
+  function shapePath(ctx,s,x,y,w,h){
+    ctx.beginPath();
+    if(s==="circle"){ ctx.arc(x+w/2,y+h/2,w/2,0,7); return; }
+    const r = s==="square"? w*.08 : w*.26; const big=w*.5, small=w*.1;
+    const tl = s==="leaf"?big:r, tr = s==="leaf"?small:r, br = s==="leaf"?big:r, bl = s==="leaf"?small:r;
+    ctx.moveTo(x+tl,y); ctx.lineTo(x+w-tr,y); ctx.quadraticCurveTo(x+w,y,x+w,y+tr); ctx.lineTo(x+w,y+h-br); ctx.quadraticCurveTo(x+w,y+h,x+w-br,y+h);
+    ctx.lineTo(x+bl,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-bl); ctx.lineTo(x,y+tl); ctx.quadraticCurveTo(x,y,x+tl,y); ctx.closePath();
+  }
+  function glyph(ctx,k,s){
+    // Dibujo blanco centrado en un lienzo de lado s.
+    const u=s/100; ctx.save(); ctx.strokeStyle="#FFFFFF"; ctx.fillStyle="#FFFFFF"; ctx.lineWidth=6*u; ctx.lineJoin="round"; ctx.lineCap="round";
+    const rr=(x,y,w,h,r)=>{ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();};
+    if(k==="pc"){ rr(24*u,28*u,52*u,36*u,5*u); ctx.stroke(); ctx.beginPath(); ctx.moveTo(50*u,64*u); ctx.lineTo(50*u,72*u); ctx.moveTo(38*u,74*u); ctx.lineTo(62*u,74*u); ctx.stroke(); }
+    if(k==="trash"||k==="trashFull"){ ctx.beginPath(); ctx.moveTo(32*u,38*u); ctx.lineTo(36*u,76*u); ctx.lineTo(64*u,76*u); ctx.lineTo(68*u,38*u); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(26*u,34*u); ctx.lineTo(74*u,34*u); ctx.moveTo(42*u,34*u); ctx.lineTo(44*u,26*u); ctx.lineTo(56*u,26*u); ctx.lineTo(58*u,34*u); ctx.stroke();
+      if(k==="trashFull"){ ctx.beginPath(); ctx.moveTo(42*u,46*u); ctx.lineTo(44*u,66*u); ctx.moveTo(58*u,46*u); ctx.lineTo(56*u,66*u); ctx.stroke(); } }
+    if(k==="user"){ ctx.beginPath(); ctx.arc(50*u,40*u,12*u,0,7); ctx.stroke(); ctx.beginPath(); ctx.arc(50*u,82*u,24*u,Math.PI*1.12,Math.PI*1.88); ctx.stroke(); }
+    if(k==="globe"){ ctx.beginPath(); ctx.arc(50*u,50*u,24*u,0,7); ctx.stroke(); ctx.beginPath(); ctx.ellipse(50*u,50*u,10*u,24*u,0,0,7); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(27*u,50*u); ctx.lineTo(73*u,50*u); ctx.stroke(); }
+    ctx.restore();
+  }
+  function iconPng(k,s,color,shape,emoji){
+    const c=document.createElement("canvas"); c.width=c.height=s; const ctx=c.getContext("2d"); const pad=s*.06;
+    ctx.save(); ctx.shadowColor="rgba(0,0,0,.25)"; ctx.shadowBlur=s*.05; ctx.shadowOffsetY=s*.02;
+    shapePath(ctx,shape,pad,pad,s-2*pad,s-2*pad); const g=ctx.createLinearGradient(0,0,s,s); g.addColorStop(0,mix(color,"#FFFFFF",.18)); g.addColorStop(1,mix(color,"#000000",.22)); ctx.fillStyle=g; ctx.fill(); ctx.restore();
+    if(emoji){ ctx.font=`${s*.46}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`; ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.fillText(emoji,s/2,s*.53); }
+    else glyph(ctx,k,s);
+    return c;
+  }
+
+  // ---------- Cursor ----------
+  const CURSORS=[["classic","Clásico"],["round","Redondeado"],["big","Grande"]];
+  function cursorPng(kind,s){
+    const c=document.createElement("canvas"); c.width=c.height=s; const ctx=c.getContext("2d");
+    const scale = (S.cursorStyle==="big"? s*.9 : s*.62)/22, round = S.cursorStyle!=="classic";
+    const fill=S.cursorColor, edge = lum(fill)>.45 ? "#111318" : "#FFFFFF";
+    const pts=[[0,0],[0,17],[4.2,13.2],[7,19.6],[9.6,18.4],[6.9,12.2],[12.4,12.2]];
+    ctx.save(); ctx.translate(1.5,1.5); ctx.scale(scale,scale); ctx.lineJoin=round?"round":"miter"; ctx.lineCap="round";
+    ctx.beginPath(); pts.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y)); ctx.closePath();
+    ctx.lineWidth = round? 2.2 : 1.4; ctx.strokeStyle=edge; ctx.stroke(); ctx.fillStyle=fill; ctx.fill(); ctx.stroke(); ctx.restore();
+    if(kind==="link"){ const r=s*.17; ctx.beginPath(); ctx.arc(s-r-1.5, s-r-1.5, r, 0, 7); ctx.fillStyle=S.accent; ctx.fill(); ctx.lineWidth=Math.max(1.5,s*.04); ctx.strokeStyle=edge; ctx.stroke(); }
+    return c;
+  }
+  // Archivo .ico (tipo 1) o .cur (tipo 2) con imágenes PNG dentro (Windows Vista y posteriores).
+  async function icoBlob(canvases,type,hot){
+    const pngs = await Promise.all(canvases.map(c=>new Promise(r=>c.toBlob(b=>b.arrayBuffer().then(a=>r(new Uint8Array(a))),"image/png"))));
+    const head=6+16*pngs.length, total=head+pngs.reduce((a,p)=>a+p.length,0), buf=new ArrayBuffer(total), dv=new DataView(buf), out=new Uint8Array(buf);
+    dv.setUint16(0,0,true); dv.setUint16(2,type,true); dv.setUint16(4,pngs.length,true); let off=head;
+    pngs.forEach((p,i)=>{ const w=canvases[i].width, e=6+16*i; dv.setUint8(e,w>=256?0:w); dv.setUint8(e+1,w>=256?0:w); dv.setUint8(e+2,0); dv.setUint8(e+3,0);
+      if(type===2){ dv.setUint16(e+4,Math.round(hot[0]*w),true); dv.setUint16(e+6,Math.round(hot[1]*w),true); } else { dv.setUint16(e+4,1,true); dv.setUint16(e+6,32,true); }
+      dv.setUint32(e+8,p.length,true); dv.setUint32(e+12,off,true); out.set(p,off); off+=p.length; });
+    return new Blob([buf]);
+  }
+
+  // ---------- Sonidos ----------
+  const PACKS=[["none","Los de Windows"],["bells","Campanitas"],["bubbles","Burbujas"],["retro","Retro 8 bits"],["soft","Suave"]];
+  const EVENTS=[["notify","Notificación","Notification.Default"],["error","Error","SystemHand"],["warn","Aviso","SystemExclamation"],["logon","Inicio","WindowsLogon"],["ding","Clic","SystemAsterisk"]];
+  const N = n => 440*Math.pow(2,(n-69)/12);
+  function notes(pack,ev){
+    // [frecuencia, frecuencia final, inicio s, duración s, onda, volumen]
+    const seq = {
+      bells:{notify:[[88,0,0,.6],[95,0,.12,.8]],error:[[79,0,0,.5],[74,0,.16,.7]],warn:[[81,0,0,.4],[81,0,.18,.6]],logon:[[84,0,0,.6],[88,0,.12,.6],[91,0,.24,.6],[96,0,.36,1]],ding:[[93,0,0,.5]]},
+      bubbles:{notify:[[72,84,0,.12],[79,91,.14,.14]],error:[[72,60,0,.2],[67,55,.2,.25]],warn:[[76,82,0,.09],[76,82,.12,.09],[76,82,.24,.09]],logon:[[60,72,0,.12],[64,76,.13,.12],[67,79,.26,.12],[72,88,.39,.2]],ding:[[79,91,0,.1]]},
+      retro:{notify:[[76,0,0,.08],[83,0,.09,.14]],error:[[55,0,0,.12],[50,0,.13,.25]],warn:[[72,0,0,.07],[72,0,.1,.07],[72,0,.2,.07]],logon:[[60,0,0,.09],[64,0,.1,.09],[67,0,.2,.09],[72,0,.3,.25]],ding:[[84,0,0,.07]]},
+      soft:{notify:[[69,0,0,.9],[76,0,.2,1]],error:[[57,0,0,.9],[52,0,.25,1.1]],warn:[[64,0,0,.8]],logon:[[57,0,0,1.2],[64,0,.25,1.2],[69,0,.5,1.4]],ding:[[72,0,0,.6]]}
+    }[pack][ev];
+    const wave = {bells:"triangle",bubbles:"sine",retro:"square",soft:"sine"}[pack];
+    const vol = {bells:.5,bubbles:.6,retro:.18,soft:.45}[pack];
+    return seq.map(([a,b,t,d])=>[N(a), b?N(b):0, t, d, wave, vol]);
+  }
+  async function renderSound(pack,ev){
+    const list=notes(pack,ev), sr=44100, len=Math.max(...list.map(n=>n[2]+n[3]))+.15;
+    const ctx=new OfflineAudioContext(1,Math.ceil(sr*len),sr);
+    list.forEach(([f,f2,t,d,wave,vol])=>{ const o=ctx.createOscillator(), g=ctx.createGain(); o.type=wave; o.frequency.setValueAtTime(f,t);
+      if(f2) o.frequency.exponentialRampToValueAtTime(f2,t+d*.8);
+      g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(vol,t+.008); g.gain.exponentialRampToValueAtTime(0.0001,t+d);
+      o.connect(g).connect(ctx.destination); o.start(t); o.stop(t+d+.02);
+      if(pack==="bells"){ const o2=ctx.createOscillator(), g2=ctx.createGain(); o2.type="sine"; o2.frequency.value=f*2.01; g2.gain.setValueAtTime(0.0001,t); g2.gain.exponentialRampToValueAtTime(vol*.25,t+.008); g2.gain.exponentialRampToValueAtTime(0.0001,t+d*.6); o2.connect(g2).connect(ctx.destination); o2.start(t); o2.stop(t+d); } });
+    return ctx.startRendering();
+  }
+  function wav(buffer){
+    const data=buffer.getChannelData(0), n=data.length, out=new ArrayBuffer(44+n*2), v=new DataView(out); const w=(o,s)=>[...s].forEach((c,i)=>v.setUint8(o+i,c.charCodeAt(0)));
+    w(0,"RIFF"); v.setUint32(4,36+n*2,true); w(8,"WAVE"); w(12,"fmt "); v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,1,true);
+    v.setUint32(24,buffer.sampleRate,true); v.setUint32(28,buffer.sampleRate*2,true); v.setUint16(32,2,true); v.setUint16(34,16,true); w(36,"data"); v.setUint32(40,n*2,true);
+    for(let i=0;i<n;i++){ const s=Math.max(-1,Math.min(1,data[i])); v.setInt16(44+i*2, s<0?s*0x8000:s*0x7FFF, true); }
+    return new Blob([out]);
+  }
+  let audioCtx=null;
+  async function play(ev){
+    if(S.soundPack==="none"){ say("Con «Los de Windows» se mantienen los sonidos normales del sistema."); return; }
+    try{ audioCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)(); const b=await renderSound(S.soundPack,ev);
+      const src=audioCtx.createBufferSource(); src.buffer=b; src.connect(audioCtx.destination); src.start(); }
+    catch(e){ say("Este navegador no puede reproducir el sonido.", true); }
+  }
+
+  // Controles nuevos
+  SHAPES.forEach(([k,l])=>{ const b=document.createElement("button"); b.type="button"; b.className="chip"; b.textContent=l; b.dataset.k=k; b.addEventListener("click",()=>{S.iconShape=k;syncInputs();render();}); $("iconShapes").append(b); });
+  CURSORS.forEach(([k,l])=>{ const b=document.createElement("button"); b.type="button"; b.className="chip"; b.textContent=l; b.dataset.k=k; b.addEventListener("click",()=>{S.cursorStyle=k;syncInputs();render();}); $("cursorStyles").append(b); });
+  PACKS.forEach(([k,l])=>{ const b=document.createElement("button"); b.type="button"; b.className="chip"; b.textContent=l; b.dataset.k=k; b.addEventListener("click",()=>{S.soundPack=k;syncInputs(); if(k!=="none") play("notify");}); $("soundPacks").append(b); });
+  EVENTS.forEach(([k,l])=>{ const b=document.createElement("button"); b.type="button"; b.className="chip play"; b.textContent=l; b.setAttribute("aria-label",`Escuchar ${l}`); b.addEventListener("click",()=>play(k)); $("soundTests").append(b); });
+  $("tbNeutral").addEventListener("click",()=>{S.taskbarAccent=false;syncInputs();render();});
+  $("tbAccent").addEventListener("click",()=>{S.taskbarAccent=true;syncInputs();render();});
+  $("iconColor").addEventListener("input",e=>{S.iconColor=e.target.value;render();});
+  $("cursorColor").addEventListener("input",e=>{S.cursorColor=e.target.value;render();});
+  function syncExtra(){
+    const mark=(box,val)=>document.querySelectorAll(`#${box} .chip`).forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.k===val)));
+    mark("iconShapes",S.iconShape); mark("cursorStyles",S.cursorStyle); mark("soundPacks",S.soundPack);
+    $("tbNeutral").setAttribute("aria-pressed",String(!S.taskbarAccent)); $("tbAccent").setAttribute("aria-pressed",String(S.taskbarAccent));
+    $("iconColor").value=iconCol(); $("cursorColor").value=S.cursorColor; $("soundTests").hidden = S.soundPack==="none";
+  }
+
+  // ---------- Render ----------
+  function chrome(){
+    const acc=S.accent, ink=inkOn(acc);
+    const dark = S.dark || S.taskbarAccent;
+    const bar = S.taskbarAccent ? rgba(mix(acc,"#000000",.35),.9) : dark ? "rgba(24,26,34,.82)" : "rgba(245,247,250,.82)", barInk = dark?"#F3F4F6":"#1F2430";
+    const tb=$("taskbar"); tb.style.background=bar; tb.style.color=barInk;
+    tb.querySelectorAll("i").forEach((i,k)=>{ i.style.background = k===0? (S.taskbarAccent?"#FFFFFF":acc) : (dark? "rgba(255,255,255,.35)":"rgba(0,0,0,.25)"); });
+    const win=$("win"), wbg=dark?"#1E2230":"#FFFFFF", wfg=dark?"#E5E7EB":"#1F2430";
+    win.style.background=wbg; win.style.color=wfg; win.querySelector(".bar").style.background=dark?"#262B3A":"#F1F3F7";
+    win.querySelectorAll(".line").forEach(l=>l.style.background=wfg); win.querySelector(".btn").style.background=acc;
+    const ic = iconCol();
+    document.querySelectorAll(".desk-icon").forEach(d=>{ d.querySelector("img").src = iconPng(d.dataset.k, 64, ic, S.iconShape).toDataURL(); });
+    document.querySelectorAll(".app i").forEach((i,k)=>{ i.style.background = k%3===0? ic : mix(ic, S.dark?"#111318":"#FFFFFF", .25+.12*(k%3)); i.style.borderRadius = shapeCss(S.iconShape); });
+    document.querySelectorAll(".dock i").forEach(i=>i.style.borderRadius = shapeCss(S.iconShape));
+    $("iconPreview").textContent=""; DESK.forEach(([k,n])=>{ const im=document.createElement("img"); im.alt=n; im.src=iconPng(k,88,ic,S.iconShape).toDataURL(); $("iconPreview").append(im); });
+    const cur = cursorPng("arrow", 32); $("cursorPreview").src = cursorPng("arrow",48).toDataURL();
+    document.querySelector(".screen").style.cursor = `url(${cur.toDataURL()}) 1 1, auto`;
+    $("win").querySelector(".btn").style.cursor = `url(${cursorPng("link",32).toDataURL()}) 1 1, pointer`;
+    const dk=$("dock"); dk.style.background = S.dark?"rgba(20,22,30,.45)":"rgba(255,255,255,.45)";
+    dk.querySelectorAll("i").forEach((i,k)=>i.style.background = k===0?acc:mix(acc,S.dark?"#111318":"#FFFFFF",.35));
+    const phoneInk = "#FFFFFF"; document.querySelectorAll(".status,.lockclock,.lockdate").forEach(e=>{e.style.color=phoneInk; e.style.textShadow="0 1px 4px rgba(0,0,0,.4)";});
+  }
+  let pending=false;
+  function render(){
+    if(pending) return; pending=true;
+    requestAnimationFrame(()=>{ pending=false;
+      drawWallpaper(pcCanvas.getContext("2d"),pcCanvas.width,pcCanvas.height,S);
+      drawWallpaper(phoneCanvas.getContext("2d"),phoneCanvas.width,phoneCanvas.height,S);
+      chrome(); });
+  }
+  function renderPresets(){
+    document.querySelectorAll(".preset").forEach(b=>{ const p=PRESETS[Number(b.dataset.i)]; const c=b.querySelector("canvas");
+      drawWallpaper(c.getContext("2d"),c.width,c.height,{...BASE,...p,seed:7,stickerSize:9}); });
+  }
+
+  // ---------- Guardados (solo en este navegador) ----------
+  const KEY="tt-saved";
+  const loadSaved = () => { try{ return JSON.parse(localStorage.getItem(KEY)||"[]"); }catch(e){ return []; } };
+  const storeSaved = list => { try{ localStorage.setItem(KEY, JSON.stringify(list)); return true; }catch(e){ return false; } };
+  function drawSaved(){
+    const box=$("saved"); box.textContent="";
+    loadSaved().forEach((t,i)=>{
+      const item=document.createElement("div"); item.className="item";
+      const open=document.createElement("button"); open.type="button";
+      const dot=document.createElement("span"); dot.className="dot"; dot.style.background=`linear-gradient(135deg,${t.c1},${t.c2})`;
+      open.append(dot, document.createTextNode(t.name)); open.addEventListener("click",()=>{ S={...BASE,...t}; syncInputs(); render(); markPreset(-1); });
+      const x=document.createElement("button"); x.type="button"; x.className="x"; x.textContent="×"; x.setAttribute("aria-label",`Borrar ${t.name}`);
+      x.addEventListener("click",()=>{ const l=loadSaved(); l.splice(i,1); storeSaved(l); drawSaved(); });
+      item.append(open,x); box.append(item);
+    });
+  }
+  $("save").addEventListener("click",()=>{
+    const name=(S.name||"Mi tema").trim(); const l=loadSaved().filter(t=>t.name!==name); l.unshift({...S,name});
+    say(storeSaved(l.slice(0,12)) ? `Guardado "${name}" en este navegador.` : "No se ha podido guardar en este navegador.", !1); drawSaved();
+  });
+
+  // ---------- Exportar ----------
+  const dlPromise = (window.claude && window.claude.use) ? Promise.race([window.claude.use("downloads").catch(()=>null), new Promise(r=>setTimeout(()=>r(null),10000))]) : Promise.resolve(null);
+  function say(msg,err){ const t=$("toast"); t.textContent=msg; t.classList.toggle("err",!!err); }
+  const safe = s => (s||"Mi tema").trim().replace(/[\\/:*?"<>|]+/g,"").replace(/\s+/g," ") || "Mi tema";
+  // Nombres de archivo sin tildes ni eñes: así no fallan en ningún sistema ni navegador.
+  const fileName = s => safe(s).normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^A-Za-z0-9 ._-]/g,"").trim() || "Mi tema";
+  function blobAt(w,h){ const c=document.createElement("canvas"); c.width=w; c.height=h; drawWallpaper(c.getContext("2d"),w,h,S); return new Promise(r=>c.toBlob(r,"image/png")); }
+  // Descarga: dentro de claude.ai usa su capacidad "downloads"; en tu propia web (GitHub Pages), un enlace de descarga normal.
+  function plainDownload(filename,data){
+    const url=URL.createObjectURL(data instanceof Blob?data:new Blob([data])); const a=document.createElement("a");
+    a.href=url; a.download=filename; document.body.append(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),30000);
+    say(`Listo: ${filename}`);
+  }
+  async function save(filename,data){
+    const dl = await dlPromise;
+    if(!dl){
+      if(window.claude){ say("La descarga no está disponible en esta vista de claude.ai.", true); return; }
+      plainDownload(filename,data); return;
+    }
+    try{ await dl.save({filename,data}); say(`Listo: ${filename}`); }
+    catch(e){ const c=e&&e.code; say(c==="declined"?"Descarga cancelada.":c==="rate_limited"?"Espera un momento y vuelve a intentarlo.":"No se pudo descargar el archivo.", c!=="declined"); }
+  }
+  // Windows lee los .theme como INI: en UTF-16 con BOM conserva tildes y eñes.
+  function utf16(str){ const b=new Uint8Array(2+str.length*2); b[0]=0xFF; b[1]=0xFE; for(let i=0;i<str.length;i++){ const c=str.charCodeAt(i); b[2+i*2]=c&255; b[3+i*2]=c>>8; } return b; }
+  const BASEDIR="%USERPROFILE%\\Pictures\\TallerTemas";
+  function themeFile(name){
+    const [r,g,b]=hex2rgb(S.accent), col="0XC4"+[r,g,b].map(v=>v.toString(16).padStart(2,"0").toUpperCase()).join(""), mode=(S.dark||S.taskbarAccent)?"Dark":"Light";
+    const L=["; Creado con Taller de Temas","[Theme]",`DisplayName=${name}`,"",
+      "[CLSID\\{20D04FE0-3AEA-1069-A2D8-08002B30309D}\\DefaultIcon]",`DefaultValue=${BASEDIR}\\iconos\\equipo.ico`,"",
+      "[CLSID\\{645FF040-5081-101B-9F08-00AA002F954E}\\DefaultIcon]",`Full=${BASEDIR}\\iconos\\papelera-llena.ico`,`Empty=${BASEDIR}\\iconos\\papelera-vacia.ico`,"",
+      "[CLSID\\{59031A47-3F72-44A7-89C5-5595FE6B30EE}\\DefaultIcon]",`DefaultValue=${BASEDIR}\\iconos\\usuario.ico`,"",
+      "[CLSID\\{F02C1A0D-BE21-4350-88B0-7367FC96EF3C}\\DefaultIcon]",`DefaultValue=${BASEDIR}\\iconos\\red.ico`,"",
+      "[Control Panel\\Cursors]","DefaultValue=TallerTemas",`Arrow=${BASEDIR}\\cursores\\flecha.cur`,`Hand=${BASEDIR}\\cursores\\enlace.cur`,"",
+      "[Control Panel\\Desktop]",`Wallpaper=${BASEDIR}\\fondo.png`,"TileWallpaper=0","WallpaperStyle=10","",
+      "[VisualStyles]","Path=%SystemRoot%\\resources\\themes\\Aero\\Aero.msstyles","ColorStyle=NormalColor","Size=NormalSize",
+      "AutoColorization=0",`ColorizationColor=${col}`,`SystemMode=${mode}`,`AppMode=${mode}`,""];
+    if(S.soundPack!=="none"){
+      L.push("[Sounds]","SchemeName=TallerTemas","");
+      EVENTS.forEach(([k,,key])=>L.push(`[AppEvents\\Schemes\\Apps\\.Default\\${key}]`,`DefaultValue=${BASEDIR}\\sonidos\\${k}.wav`,""));
+    }
+    L.push("[MasterThemeSelector]","MTSM=RJSPBS","");
+    return L.join("\r\n");
+  }
+  $("dlWin").addEventListener("click",async()=>{
+    if(!window.JSZip){ say("No se ha podido preparar el .zip. Usa «Solo fondo PC».", true); return; }
+    say("Preparando el tema…"); const name=safe(S.name), fn=fileName(S.name); const z=new JSZip(); const f=z.folder("TallerTemas");
+    f.file("fondo.png", await blobAt(1920,1080)); f.file("fondo-4k.png", await blobAt(3840,2160));
+    const ic=iconCol(), sizes=[16,32,48,256];
+    const ico = async k => icoBlob(sizes.map(s=>iconPng(k,s,ic,S.iconShape)),1);
+    const fi=f.folder("iconos"); fi.file("equipo.ico",await ico("pc")); fi.file("papelera-vacia.ico",await ico("trash")); fi.file("papelera-llena.ico",await ico("trashFull"));
+    fi.file("usuario.ico",await ico("user")); fi.file("red.ico",await ico("globe"));
+    const fc=f.folder("cursores"); const csz=S.cursorStyle==="big"?[48,64]:[32,48];
+    fc.file("flecha.cur", await icoBlob(csz.map(s=>cursorPng("arrow",s)),2,[1.5/32,1.5/32])); fc.file("enlace.cur", await icoBlob(csz.map(s=>cursorPng("link",s)),2,[1.5/32,1.5/32]));
+    if(S.soundPack!=="none"){ const fs=f.folder("sonidos"); for(const [k] of EVENTS) fs.file(`${k}.wav`, wav(await renderSound(S.soundPack,k))); }
+    f.file(`${fn}.theme`, utf16(themeFile(name)));
+    if(S.taskbarAccent) f.file("barra-de-tareas-con-color.reg", ["Windows Registry Editor Version 5.00","","[HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize]","\"ColorPrevalence\"=dword:00000001",""].join("\r\n"));
+    f.file("LEEME.txt", ["Cómo instalar tu tema en Windows 10 u 11:","","1. Copia la carpeta TallerTemas dentro de tu carpeta Imágenes (C:\\Users\\TU_USUARIO\\Pictures). Tiene que quedar exactamente ahí.",`2. Abre la carpeta y haz doble clic en "${fn}.theme".`,"3. Windows aplica el fondo, el color de acento, el modo claro u oscuro, el cursor, los iconos del escritorio y los sonidos.",
+      ...(S.taskbarAccent?["4. Para que la barra de tareas lleve el color: haz doble clic en \"barra-de-tareas-con-color.reg\" y acepta. (O en Configuración > Personalización > Colores > \"Mostrar color de énfasis en Inicio y la barra de tareas\".)"]:[]),
+      "","Si Windows pregunta al abrir el tema, es normal: los temas propios no van firmados por Microsoft."].join("\r\n"));
+    await save(`${fn} - Windows.zip`, await z.generateAsync({type:"blob"}));
+  });
+  $("dlPhone").addEventListener("click",async()=>{
+    if(!window.JSZip){ say("No se ha podido preparar el .zip. Usa «Solo fondo móvil».", true); return; }
+    say("Preparando los fondos e iconos…"); const name=fileName(S.name); const z=new JSZip();
+    z.file(`${name} - Android.png`, await blobAt(1080,2400)); z.file(`${name} - iPhone.png`, await blobAt(1179,2556));
+    const fi=z.folder("iconos"), ic=iconCol();
+    for(const [e,n] of APPS){ fi.file(`${fileName(n)}.png`, await new Promise(r=>iconPng("",512,ic,S.iconShape,e).toBlob(r,"image/png"))); }
+    z.file("LEEME.txt", ["FONDO","Android: abre la imagen en Galería > tres puntos > Establecer como fondo (inicio, bloqueo o ambos).","Con Android 12 o superior, los colores del sistema se adaptan al fondo automáticamente.","iPhone: guarda la imagen en Fotos > ábrela > Compartir > Usar como fondo.","",
+      "ICONOS (carpeta iconos)","Android: con un launcher que permita iconos propios (por ejemplo Nova o Lawnchair), mantén pulsada una app > Editar > toca el icono > elige la imagen.","iPhone: app Atajos > + > Abrir app > elige la app > compartir > Añadir a pantalla de inicio > toca el icono > Elegir foto.","",
+      "El cursor y los sonidos son solo para Windows: los móviles no permiten cambiarlos."].join("\n"));
+    await save(`${name} - Movil.zip`, await z.generateAsync({type:"blob"}));
+  });
+  $("dlPcPng").addEventListener("click",async()=>{ say("Preparando…"); await save(`${fileName(S.name)} - PC.png`, await blobAt(1920,1080)); });
+  $("dlPhonePng").addEventListener("click",async()=>{ say("Preparando…"); await save(`${fileName(S.name)} - Movil.png`, await blobAt(1080,2400)); });
+
+  // ---------- Arranque ----------
+  syncInputs(); markPreset(0); drawSaved();
+  let adv=false; try{ adv = localStorage.getItem("tt-mode")==="adv"; }catch(e){} setMode(adv);
+  render(); renderPresets();
+  if(document.fonts && document.fonts.load){
+    Promise.all(["Fredoka","Pacifico","Bebas Neue","Nunito"].map(f=>document.fonts.load(`700 40px "${f}"`).catch(()=>{}))).then(()=>{render();});
+  }
+})();
+</script>
+<script>
+  // Modo sin conexión: registra el service worker (solo funciona servido por https o localhost).
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+  }
+</script>
+</body>
+</html>
