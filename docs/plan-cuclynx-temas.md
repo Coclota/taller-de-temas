@@ -112,6 +112,29 @@ Hoy hay 16 emojis. Propongo:
 7. **Perfil de creador**: tus temas publicados, estrellas totales y medallas (primer tema, 100 descargas…), como los
    niveles del CuquiDicci.
 
+### 12 temas de Cuclynx Labs (petición de Killo)
+Temas listos para usar o copiar, con los linces, el nombre de Cuclynx Labs y sus lemas. Salen primero en «Temas
+listos» y se pueden editar como cualquier otro.
+
+| # | Tema | Fondo y colores | Linces y texto |
+|---|---|---|---|
+| 1 | **Cuclynx Labs** | Azul noche y oro (`#071525` / `#F5C45E`) | Logo con los seis linces, «Cuclynx Labs · Asín sí, Cuco» |
+| 2 | **Cuco de oro** | Azul noche con lluvia de monedas doradas | Cuco con su moneda, «¡Quillo!» |
+| 3 | **Benito en obras** | Rayas de obra amarillas y negras | Benito con casco y el martillo cayéndose, «Yo no sé, pero sé quién sabe» |
+| 4 | **Pupila mola mazo** | Rosa Pupila con perlas | Pupila con gafas y pendientes, «¡Mola mazo!» |
+| 5 | **Teleo y la morriña** | Azul con lluvia fina y olas | Teleo con su flequillo, «¡Morriña!» |
+| 6 | **Marianín en el olivar** | Montañas verdes y olivos al atardecer | Marianín con boina y su ramita, «¡Ala, quita!» |
+| 7 | **Brubru** | Amarillo Brubru con confeti | Brubru, «¡Chacho!» |
+| 8 | **Los guías** | Degradado amarillo a azul noche | Brubru y Cuco juntos, «Asín sí, Brubru» |
+| 9 | **La plaza del pueblo** | Cielo de tarde y casitas | Los seis linces juntos, como en la cabecera del CuquiDicci |
+| 10 | **Noche de linces** | Estrellas y luna | Las siluetas de los seis linces mirando el cielo |
+| 11 | **Festejos** | Confeti y farolillos | Teleo y Pupila de fiesta |
+| 12 | **Asín sí** | Lunares con los colores de cada app | Las caras de los seis linces en fila, «Asín sí» |
+
+Cada uno lleva color de acento, iconos, cursor y sonidos a juego. Los linces son dibujos propios de Cuclynx Labs
+(`src/Lynx.js`, `Benito.js`, `Pupila.js`, `Teleo.js`, `Marianin.js` de Place y el nuevo `Brubru.js`), así que se
+pueden usar sin problemas de derechos.
+
 ## 7. Qué podría tener la tienda
 
 Enlaces `https` a productos, como El mercadillo de Place:
@@ -192,7 +215,7 @@ app no los necesita.
 3. **Galería**: publicar, valorar, descargar, copiar, denunciar y bloquear. (Migración 004.)
 4. **Brubru**: dibujo, icono y pantalla de carga.
 5. **Anuncios**: aviso de Brubru, anuncio por tema y botón de colaborar. (Migración 005.)
-6. **Más estilos y pegatinas**.
+6. **Más estilos y pegatinas** y los **12 temas de Cuclynx Labs**.
 7. **Las ideas**: reto de la semana, temas de fechas, colores de tu foto, pase de fondos de Windows, bloqueo e
    inicio a juego y tablet, iconos y cursores, perfil de creador. (Migración 006.)
 8. **AdMob y Google Play**, cuando se compile la app.
