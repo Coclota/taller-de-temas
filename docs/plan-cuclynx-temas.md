@@ -2,7 +2,7 @@
 
 Borrador para que Killo lo revise. Todavía no hay código. Nada se programa ni se fusiona hasta que diga.
 
-*Asín sí, Chispa. Asín sí, Cuco.*
+*Asín sí, Brubru. Asín sí, Cuco.*
 
 ## 1. Qué se hace
 
@@ -22,17 +22,20 @@ sin conexión**. La cuenta Cuclynx solo hace falta para lo de comunidad (bandeja
 
 | | Propuesta | Alternativa |
 |---|---|---|
-| Nombre | **Cuclynx Temas** (subtítulo «El taller de temas de Chispa») | Cuclynx Taller |
-| Mascota | **Chispa**, lince nueva | Pupila |
-| Lema | «Asín sí, Chispa» y el de la marca, «Asín sí, Cuco» | «Asín sí, Pupila» |
+| Nombre | **Cuclynx Temas** (subtítulo «El taller de Brubru y Cuco») | Cuclynx Taller |
+| Guías | **Brubru** (nuevo) y **Cuco** | — |
+| Lema | «Asín sí, Brubru» y el de la marca, «Asín sí, Cuco» | — |
 | Prefijo de tablas | **`temas_`** | — |
 | Repositorio | **el mismo**, `Coclota/taller-de-temas` | — |
 | Web | la misma dirección; más adelante cuclynxlabs.com/temas | — |
 
-**Chispa**: lince naranja (el naranja del Taller, `#FF6B3D`), con la misma forma de cara que Cuco. Lleva un
-pañuelo de pintor anudado en la cabeza, un pincel detrás de la oreja y las patas manchadas de colores. Creativa
-y un poco desordenada. Expresión: **«¡Chacho!»** (Canarias), una zona que aún no tiene lince.
-Se dibuja en SVG partiendo de `src/Lynx.js` de Place (mismos trazos, pasados de react-native-svg a SVG normal).
+**Brubru** (personaje nuevo, idea de Killo): lince de 2 años, amarillito, con un flequillo estrecho en el
+centro, medio largo. Es el más joven de la familia. **Brubru y Cuco son los guías de esta app**: Brubru
+presenta el Taller y da los consejos; Cuco sale con él en la cabecera y en Cuenta con el lema de la marca.
+Misma forma de cara que Cuco, como Benito. Se dibuja en SVG partiendo de `src/Lynx.js` de Place (mismos trazos,
+pasados de react-native-svg a SVG normal), con su propio archivo `brubru.js`.
+
+Expresión propuesta: **«¡Chacho!»** (Canarias), una zona que aún no tiene lince. Killo puede elegir otra.
 
 ## 3. Cómo queda al estilo Cuclynx
 
@@ -40,20 +43,20 @@ Se dibuja en SVG partiendo de `src/Lynx.js` de Place (mismos trazos, pasados de 
 |---|---|
 | Una sola página larga | **Pestañas abajo** con icono y texto: Taller, Galería, Bandeja, Tienda, Cuenta |
 | Solo en español | **6 idiomas**: es (principal y de respaldo), en, fr, it, de, pt |
-| Claro u oscuro automático | Los **8 diseños de color** de Cuclynx + el suyo por defecto (**naranja Chispa**), elegidos en Cuenta |
+| Claro u oscuro automático | Los **8 diseños de color** de Cuclynx + el suyo por defecto (**amarillo Brubru**, colores por definir con buen contraste), elegidos en Cuenta |
 | «Sencillo / Más opciones» | Se queda, y además **modo sencillo** de Cuclynx: letra más grande y menos cosas por pantalla |
 | Temas guardados en el navegador | Se quedan, y además **Mis temas** en la cuenta para tenerlos en varios aparatos |
-| Icono naranja genérico | Icono y pantalla de carga con **Chispa** sobre su naranja |
+| Icono naranja genérico | Icono y pantalla de carga con **Brubru** sobre su amarillo |
 | — | Tarjetas redondeadas, botones grandes y textos cercanos, como Place |
 
 ### Pestañas
 | Pestaña | Icono | Qué hay | ¿Cuenta? |
 |---|---|---|---|
-| Taller | 🎨 | El editor de hoy entero: temas listos, fondo, pegatinas, texto, colores, iconos, cursor, sonidos, vista previa, descargas e instrucciones. Chispa en la cabecera y botón de donar | No |
+| Taller | 🎨 | El editor de hoy entero: temas listos, fondo, pegatinas, texto, colores, iconos, cursor, sonidos, vista previa, descargas e instrucciones. Brubru y Cuco en la cabecera, consejos de Brubru y botón de donar | No |
 | Galería | 🖼️ | Temas que otros publican: nuevos o más gustados, me gusta, copiar para editar, denunciar, bloquear | Sí |
 | Bandeja | ✉️ | Mensajes entre usuarios | Sí |
-| Tienda | 🛒 | «El taller de Chispa»: enlaces `https` a productos | Ver §5 |
-| Cuenta | 👤 | Entrar o crear cuenta, apodo, Mis temas, lista de correo, idioma, diseño, modo sencillo, donar, aviso legal, borrar cuenta. Abajo, el logo, «Una app de Cuclynx Labs», «Asín sí, Chispa» y Cuco con «Asín sí, Cuco» | — |
+| Tienda | 🛒 | «La tienda de Brubru»: enlaces `https` a productos | Ver §5 |
+| Cuenta | 👤 | Entrar o crear cuenta, apodo, Mis temas, lista de correo, idioma, diseño, modo sencillo, donar, aviso legal, borrar cuenta. Abajo, el logo, «Una app de Cuclynx Labs», «Asín sí, Brubru» y Cuco con «Asín sí, Cuco» | — |
 
 ## 4. Lo que llevan todas (apartado 0 de la ficha)
 
@@ -71,7 +74,7 @@ Se dibuja en SVG partiendo de `src/Lynx.js` de Place (mismos trazos, pasados de 
 ## 5. Técnica
 
 - Sigue siendo HTML + JavaScript sin compilar, como ahora. Se parte el `index.html` en varios archivos
-  (`app.js`, `i18n.js`, `themes.js`, `chispa.js`…) para que se pueda mantener.
+  (`app.js`, `i18n.js`, `themes.js`, `brubru.js`…) para que se pueda mantener.
 - **supabase-js** se guarda en `vendor/` con versión fija, como JSZip, para que no dependa de otra web.
 - Los textos se pasan a `i18n.js` con las mismas claves que Place donde coincidan.
 - Los diseños de color se copian de `src/themes.js` de Place.
@@ -105,8 +108,8 @@ Más un CI en GitHub Actions: pruebas de la base de datos y comprobar que la web
 
 ## 7. Por fases (un PR cada una)
 
-1. **Aspecto Cuclynx**: pestañas, diseños de color, modo sencillo, 6 idiomas, Chispa (icono, cabecera y pantalla
-   de carga), Cuenta con lemas. Todo sin cuenta todavía. El editor igual que hoy.
+1. **Aspecto Cuclynx**: pestañas, diseños de color, modo sencillo, 6 idiomas, Brubru y Cuco (icono, cabecera y
+   pantalla de carga), Cuenta con lemas. Todo sin cuenta todavía. El editor igual que hoy.
 2. **Cuenta Cuclynx**: entrar o crear cuenta, apodo, lista de Brevo, donar, tienda, borrar cuenta. (Migración 001.)
 3. **Bandeja**. (Migración 002.)
 4. **Mis temas y galería**. (Migraciones 003 y 004.)
@@ -118,5 +121,5 @@ Google Play (con Google Play Billing si hay pagos).
 ## 8. Preguntas para Killo
 
 1. ¿Sigue siendo web (recomendado) o la pasamos a app de Expo?
-2. ¿Nombre **Cuclynx Temas** con **Chispa**? (o Pupila)
+2. ¿Te vale «¡Chacho!» como expresión de Brubru, y el nombre **Cuclynx Temas**?
 3. ¿Te parece bien que la clave pública *anon* quede en el repositorio público?
