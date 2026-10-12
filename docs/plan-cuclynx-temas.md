@@ -1,4 +1,4 @@
-# Plan: el Taller de Temas al estilo Cuclynx Labs
+# Plan: Cuclynx Temas (app de Expo)
 
 Borrador para que Killo lo revise. Todavía no hay código. Nada se programa ni se fusiona hasta que diga.
 
@@ -6,120 +6,168 @@ Borrador para que Killo lo revise. Todavía no hay código. Nada se programa ni 
 
 ## 1. Qué se hace
 
-Killo quiere **editar el Taller de Temas** (`Coclota/taller-de-temas`, https://coclota.github.io/taller-de-temas/)
-para que sea una app más de Cuclynx Labs, siguiendo la ficha. No es una app desde cero.
+El **Taller de Temas** (https://coclota.github.io/taller-de-temas/) pasa a ser una **app de Expo** de Cuclynx
+Labs, como Place y Benito, con lo que pide Killo:
+- **Cuentas** como en las demás apps (la misma cuenta Cuclynx).
+- Crear temas y **guardarlos** en la cuenta.
+- Una **galería** donde los demás los ven, los **valoran** y los **descargan**.
+- **Más estilos y más pegatinas**, y otras mejoras (apartado 6).
 
-**Por defecto sigue siendo una web** (instalable como app, PWA) en el mismo repositorio y en GitHub Pages:
-- Es lo que ya existe y funciona.
-- El tema de Windows se usa en el ordenador, y desde el navegador del PC se descarga directamente.
-- La alternativa es pasarla a app de Expo como Place y Benito. Eso es rehacerla entera (el dibujo usa el canvas
-  del navegador). Si Killo lo prefiere, se hace después.
+Se mantiene todo lo que hace hoy el Taller. No se quita ninguna función.
 
-**Se mantiene todo lo que hace hoy.** No se quita ninguna función. El editor sigue funcionando **sin cuenta y
-sin conexión**. La cuenta Cuclynx solo hace falta para lo de comunidad (bandeja, Mis temas en la nube, galería).
+**La web actual se queda funcionando** mientras tanto, sin cambios. Más adelante puede llevar un enlace a la app.
 
 ## 2. Propuesta
 
-| | Propuesta | Alternativa |
-|---|---|---|
-| Nombre | **Cuclynx Temas** (subtítulo «El taller de Brubru y Cuco») | Cuclynx Taller |
-| Guías | **Brubru** (nuevo) y **Cuco** | — |
-| Lema | «Asín sí, Brubru» y el de la marca, «Asín sí, Cuco» | — |
-| Prefijo de tablas | **`temas_`** | — |
-| Repositorio | **el mismo**, `Coclota/taller-de-temas` | — |
-| Web | la misma dirección; más adelante cuclynxlabs.com/temas | — |
-
-**Brubru** (personaje nuevo, idea de Killo): lince de 2 años, amarillito, con un flequillo estrecho en el
-centro, medio largo. Es el más joven de la familia. **Brubru y Cuco son los guías de esta app**: Brubru
-presenta el Taller y da los consejos; Cuco sale con él en la cabecera y en Cuenta con el lema de la marca.
-Misma forma de cara que Cuco, como Benito. Se dibuja en SVG partiendo de `src/Lynx.js` de Place (mismos trazos,
-pasados de react-native-svg a SVG normal), con su propio archivo `brubru.js`.
-
-Expresión propuesta: **«¡Chacho!»** (Canarias), una zona que aún no tiene lince. Killo puede elegir otra.
-
-## 3. Cómo queda al estilo Cuclynx
-
-| Ahora | Al estilo Cuclynx |
+| | Propuesta |
 |---|---|
-| Una sola página larga | **Pestañas abajo** con icono y texto: Taller, Galería, Bandeja, Tienda, Cuenta |
-| Solo en español | **6 idiomas**: es (principal y de respaldo), en, fr, it, de, pt |
-| Claro u oscuro automático | Los **8 diseños de color** de Cuclynx + el suyo por defecto (**amarillo Brubru**, colores por definir con buen contraste), elegidos en Cuenta |
-| «Sencillo / Más opciones» | Se queda, y además **modo sencillo** de Cuclynx: letra más grande y menos cosas por pantalla |
-| Temas guardados en el navegador | Se quedan, y además **Mis temas** en la cuenta para tenerlos en varios aparatos |
-| Icono naranja genérico | Icono y pantalla de carga con **Brubru** sobre su amarillo |
-| — | Tarjetas redondeadas, botones grandes y textos cercanos, como Place |
+| Nombre | **Cuclynx Temas** («El taller de Brubru y Cuco») |
+| Guías | **Brubru** (nuevo) y **Cuco** |
+| Lemas | «Asín sí, Brubru» y el de la marca, «Asín sí, Cuco» |
+| Prefijo de tablas | **`temas_`** |
+| Repositorio | **nuevo y privado: `Coclota/cuclynx-temas`** (lo crea Killo en GitHub Desktop; yo no puedo crear repositorios). Carpeta `cuclynx-temas`, sin `&` ni `@` |
+| Paquete Android | `com.cuclynxlabs.temas` |
+| Web de Cuclynx Labs | cuclynxlabs.com/temas |
 
-### Pestañas
-| Pestaña | Icono | Qué hay | ¿Cuenta? |
-|---|---|---|---|
-| Taller | 🎨 | El editor de hoy entero: temas listos, fondo, pegatinas, texto, colores, iconos, cursor, sonidos, vista previa, descargas e instrucciones. Brubru y Cuco en la cabecera, consejos de Brubru y botón de donar | No |
-| Galería | 🖼️ | Temas que otros publican: nuevos o más gustados, me gusta, copiar para editar, denunciar, bloquear | Sí |
-| Bandeja | ✉️ | Mensajes entre usuarios | Sí |
-| Tienda | 🛒 | «La tienda de Brubru»: enlaces `https` a productos | Ver §5 |
-| Cuenta | 👤 | Entrar o crear cuenta, apodo, Mis temas, lista de correo, idioma, diseño, modo sencillo, donar, aviso legal, borrar cuenta. Abajo, el logo, «Una app de Cuclynx Labs», «Asín sí, Brubru» y Cuco con «Asín sí, Cuco» | — |
+Por qué un repositorio nuevo: el de `taller-de-temas` es público y publica la web en GitHub Pages. Si metemos ahí
+la app, la web deja de funcionar. Las otras apps tienen su repositorio privado.
+
+**Brubru** (idea de Killo): lince de 2 años, amarillito, con un flequillo estrecho en el centro, medio largo.
+El más joven de la familia. **Brubru y Cuco son los guías**: Brubru presenta el taller y da consejos; Cuco sale con
+él en Inicio y en Cuenta. Misma forma de cara que Cuco. Se dibuja en código como los demás: `src/Brubru.js`
+(react-native-svg), partiendo de `src/Lynx.js`. Expresión propuesta: **«¡Chacho!»** (Canarias). Killo puede
+elegir otra.
+
+## 3. Pestañas
+
+| Pestaña | Icono | Qué hay |
+|---|---|---|
+| Inicio | 🏠 | Brubru y Cuco, «Crear un tema», temas listos, lo mejor de la galería, consejo de Brubru, botón de donar |
+| Galería | 🖼️ | Temas de otros: nuevos, mejor valorados, más descargados; buscar; valorar; descargar; copiar para editar; denunciar; bloquear |
+| Bandeja | ✉️ | Mensajes entre usuarios |
+| Tienda | 🛒 | «La tienda de Brubru» (apartado 7) |
+| Cuenta | 👤 | Apodo, **Mis temas**, lista de correo, idioma, diseño, modo sencillo, donar, aviso legal, cerrar sesión, borrar cuenta. Abajo, el logo, «Una app de Cuclynx Labs», «Asín sí, Brubru» y Cuco con «Asín sí, Cuco» |
+
+El **editor** se abre a pantalla completa desde Inicio o desde Mis temas, con la vista previa de ordenador y móvil
+arriba y las opciones debajo, en modo **Sencillo / Más opciones** como ahora.
 
 ## 4. Lo que llevan todas (apartado 0 de la ficha)
 
-1. **Bandeja de entrada**: la de Place traducida a web (una conversación por pareja, aviso antes de mandar
-   teléfono, correo o enlace, denunciar un mensaje, bloquear, dejar de recibir mensajes). Desde la galería se
-   puede escribir al autor de un tema.
-2. **Donaciones**: pantalla «Donar» como la de Place, con `donation_settings` y `donation_sanctuaries`.
-   Botón en el Taller y en Cuenta.
-3. **Tienda**: `temas_shop_items` (título, enlace `https`, imagen, si es de afiliado), que añade el
-   administrador. Ningún precio sin fuente y fecha.
-4. **Lista de Brevo**: casilla **sin marcar** al crear la cuenta, alta con la función `comunidad`, versión de
-   consentimiento propia (`2026-10-xx-temas`). Borrar la cuenta no saca a nadie de la lista; solo darse de baja.
-5. **Lemas** en Cuenta, como arriba.
+1. **Bandeja de entrada**: la de Place (una conversación por pareja, aviso antes de mandar teléfono, correo o
+   enlace, denunciar un mensaje, bloquear, dejar de recibir mensajes). Desde un tema de la galería: «Escribir a @autor».
+2. **Donaciones**: pantalla «Donar» de Place, con `donation_settings` y `donation_sanctuaries`. En Inicio y Cuenta.
+3. **Tienda**: `temas_shop_items` con enlaces `https`, que añade el administrador. Ningún precio sin fuente y fecha.
+4. **Lista de Brevo**: casilla **sin marcar** al crear la cuenta, alta con `comunidad`, versión de consentimiento
+   propia (`2026-10-xx-temas`). Borrar la cuenta no saca a nadie de la lista; solo darse de baja.
+5. **Lemas** en Cuenta.
 
-## 5. Técnica
+Además: 6 idiomas (es principal y de respaldo), los 8 diseños de color de siempre más el suyo por defecto
+(**amarillo Brubru**, con colores que se lean bien), modo sencillo, icono y pantalla de carga con Brubru.
 
-- Sigue siendo HTML + JavaScript sin compilar, como ahora. Se parte el `index.html` en varios archivos
-  (`app.js`, `i18n.js`, `themes.js`, `brubru.js`…) para que se pueda mantener.
-- **supabase-js** se guarda en `vendor/` con versión fija, como JSZip, para que no dependa de otra web.
-- Los textos se pasan a `i18n.js` con las mismas claves que Place donde coincidan.
-- Los diseños de color se copian de `src/themes.js` de Place.
-- El service worker sube de versión para que los que la tienen instalada reciban la nueva.
+## 5. La galería: guardar, publicar, valorar y descargar
 
-### Cosas a tener en cuenta (comprobadas o por comprobar)
-- **El repositorio es público** (GitHub Pages lo necesita en cuenta gratuita). La dirección de Supabase y la clave
-  pública *anon* quedarían a la vista. Eso es normal: esa clave es pública por diseño y lo que protege los datos
-  es la RLS. **Nunca** irá la *service_role*, la de Brevo ni la de Anthropic. Killo decide si le parece bien.
-- **Entrar con correo en una web**: hay que añadir `https://coclota.github.io/taller-de-temas/` en Supabase ›
-  Authentication › URL Configuration para que los enlaces de confirmación vuelvan a la web. Lo hace Killo.
-- **Donaciones y tienda sin cuenta**: en Place las tablas solo las lee quien ha entrado. No he visto la RLS de
-  `donation_*` (está en el repositorio de Coin). **Por comprobar.** Si solo se leen con cuenta, el botón de
-  donar pide entrar o se abre una función pública que solo devuelva lo necesario.
-- Las fotos propias **no** se suben a la galería en esta versión (pueden salir caras o casas). Se quedan en el
-  aparato, como ahora.
+- **Mis temas**: cada tema se guarda en la cuenta. **Privado por defecto.**
+- **Publicar** es un botón aparte, con aviso de que todos lo verán con tu @apodo.
+- Un tema se guarda como sus **ajustes** (colores, estilo, pegatinas, texto…), no como imagen. La app lo dibuja en
+  el móvil. Así ocupa muy poco y no hace falta guardar imágenes en Supabase.
+- **Valorar**: de 1 a 5 estrellas, una valoración por persona y tema, que se puede cambiar. No puedes valorar los
+  tuyos. Se ve la media y cuántas valoraciones tiene.
+- **Descargar**: genera en el móvil los mismos archivos que hoy (zip de Windows, zip de móvil, PNG). Se cuentan
+  las descargas.
+- **Copiar para editar**: lo guarda en Mis temas como «Basado en @autor».
+- **Seguridad**: denunciar (nombre o texto ofensivo, copia, spam…), se oculta solo tras 3 denuncias de personas
+  distintas, bloquear al autor. Límite de temas publicados al día (en `temas_settings`, se cambia sin publicar la app).
+  Los nombres y textos no pueden hacerse pasar por la app (Brubru, Cuclynx, admin…).
+- **Fotos propias**: en la primera versión, un tema con foto propia **no se puede publicar** (pueden salir caras,
+  casas o matrículas). Se puede guardar y descargar, y la foto se queda en el móvil.
 
-## 6. Base de datos (Supabase compartido, prefijo `temas_`)
+## 6. Mejoras
 
-Carpeta nueva `supabase/migrations/` con su `supabase/rollback/`, y pruebas de RLS en `tests/sql/rls.sh`
-(copiadas de Place). RLS en todas las tablas y validación en el servidor. Sin código postal ni dirección.
+### Más estilos de fondo
+Hoy hay 9: degradado, liso, burbujas, olas, montañas, lunares, rayas, estrellas y mi foto. Propongo **12 más**:
+corazones, confeti, arcoíris, aurora (luces del norte), mármol, triángulos (geométrico), píxeles, panal
+(hexágonos), cuadros escoceses, nubes, luna y noche, y flores.
+
+### Más pegatinas
+Hoy hay 16 emojis. Propongo:
+- **Pegatinas de Cuclynx**: Brubru, Cuco, Benito, Pupila, Teleo y Marianín (caras dibujadas en código), la
+  moneda de Cuco y el martillo de Benito.
+- **Unas 24 pegatinas propias** dibujadas en código: corazón, estrella, rayo, nube, sol, luna, planeta, cohete,
+  flor, hoja, gota, corona, nota musical, balón, mando de juegos, gato, perro, mariposa, arcoíris, fuego, diamante,
+  ancla, gafas de sol y bocadillo de texto.
+- Varias pegatinas distintas en el mismo tema (hoy se elige una).
+- **Por comprobar**: si los emojis se ven bien al dibujar el PNG en el móvil. Si no, se sustituyen por las
+  pegatinas propias. Las propias también evitan problemas de derechos con los dibujos de emojis de cada marca.
+
+### Otras ideas mías
+1. **Reto de la semana**: Brubru propone un tema («Otoño», «Mi pueblo», «Retro»…) y la galería tiene su apartado
+   para ese reto, con los mejor valorados.
+2. **Temas de fechas**: Navidad, Carnaval, Semana Santa, feria, Halloween, verano… que salen solos en Inicio.
+3. **Colores sacados de tu foto**: eliges una foto y la app propone dos colores a juego.
+4. **Varios fondos en un tema de Windows**: pase de fondos (Windows los cambia cada cierto tiempo).
+5. **Pantalla de bloqueo e inicio a juego** para el móvil, y tamaños de tablet.
+6. **Iconos a juego** para más apps y carpetas de Windows, y más cursores (texto, espera, mover). Estaban pendientes
+   en el Taller.
+7. **Perfil de creador**: tus temas publicados, estrellas totales y medallas (primer tema, 100 descargas…), como los
+   niveles del CuquiDicci.
+
+## 7. Qué podría tener la tienda
+
+Enlaces `https` a productos, como El mercadillo de Place:
+- **Cosas de los linces**: pegatinas, llaveros, tazas, camisetas y peluches de Brubru y Cuco (con una tienda de
+  impresión bajo pedido; Killo elige cuál).
+- **A juego con tu tema**: fundas de móvil, alfombrillas de ratón, láminas y pósteres impresos con tu fondo.
+- **Para el escritorio**: teclados y ratones de colores, soportes de móvil, luces LED (enlaces de afiliado, marcados
+  como tales).
+- **Packs de temas especiales** y **membresía sin anuncios**: son cosas digitales dentro de la app, así que antes de
+  publicar en Google Play tienen que ir por **Google Play Billing**. Primera versión: no.
+
+Ningún precio sin fuente y fecha.
+
+## 8. Técnica
+
+Se parte del código de **Cuclynx Place** (bandeja, mercadillo, donaciones, temas, idiomas, modo sencillo, Marianín
+para confirmar borrados, CI y pruebas de RLS) y se cambia lo de Place por lo de Temas.
+
+- Expo SDK 57 + React Native + supabase-js, como Place. Probar con Expo Go.
+- **Dibujar los fondos**: `@shopify/react-native-skia`, que viene en Expo Go y permite pintar y sacar PNG. El
+  código de dibujo del Taller (`drawWallpaper`, iconos, cursores) se traduce a Skia.
+- **Archivos .zip**: JSZip (licencia MIT, ya está en el Taller). **Cursores .cur, sonidos .wav y archivo .theme**:
+  se generan en JavaScript como en la web.
+- **Guardar y compartir**: `expo-file-system` y `expo-sharing` (para mandarse el .zip al ordenador por correo,
+  Drive o WhatsApp). Guardar fotos en el móvil con `expo-media-library`.
+
+### Por comprobar antes de prometerlo
+- Que `expo-media-library` deja guardar fotos en Expo Go con Android. Si no, se comparte el PNG y la persona lo guarda.
+- Poner el fondo directamente desde la app necesita la app compilada; en Expo Go se explica cómo ponerlo a mano.
+- El tema de Windows se usa en el ordenador: la app lo genera y la persona se lo pasa al PC.
+
+## 9. Base de datos (Supabase compartido, prefijo `temas_`)
+
+Migraciones numeradas en `supabase/migrations/`, su rollback en `supabase/rollback/` y pruebas de RLS en
+`tests/sql/rls.sh`. RLS en todas las tablas y validación en el servidor. **Sin código postal ni dirección**: esta
+app no los necesita.
 
 | Migración | Qué trae |
 |---|---|
 | 001 base | `temas_profiles` (apodo público único, apodos reservados), `temas_settings` (límites), `temas_shop_items`, `temas_delete_my_account()` |
-| 002 bandeja | `temas_conversations`, `temas_messages`, `temas_message_reports`, `temas_blocks` (de Place) |
-| 003 mis temas | `temas_themes`: los ajustes del tema validados en el servidor, **privados por defecto** |
-| 004 galería | publicar y ocultar, `temas_likes`, `temas_reports`, se oculta solo tras 3 denuncias |
+| 002 bandeja | `temas_conversations`, `temas_messages`, `temas_message_reports`, `temas_blocks` (copiadas de Place) |
+| 003 mis temas | `temas_themes`: ajustes del tema validados en el servidor (tamaño, colores, nombres), privados por defecto |
+| 004 galería | publicar, `temas_ratings` (1 a 5), `temas_downloads`, `temas_reports`, ocultar tras 3 denuncias |
 
-Más un CI en GitHub Actions: pruebas de la base de datos y comprobar que la web carga sin errores.
+## 10. Por fases (un PR cada una)
 
-## 7. Por fases (un PR cada una)
-
-1. **Aspecto Cuclynx**: pestañas, diseños de color, modo sencillo, 6 idiomas, Brubru y Cuco (icono, cabecera y
-   pantalla de carga), Cuenta con lemas. Todo sin cuenta todavía. El editor igual que hoy.
-2. **Cuenta Cuclynx**: entrar o crear cuenta, apodo, lista de Brevo, donar, tienda, borrar cuenta. (Migración 001.)
-3. **Bandeja**. (Migración 002.)
-4. **Mis temas y galería**. (Migraciones 003 y 004.)
+1. **Esqueleto Cuclynx**: cuenta, apodo, pestañas, Cuenta con lemas, idiomas, diseños, modo sencillo, donar, tienda,
+   bandeja, Brevo, borrar cuenta, CI. (Migraciones 001 y 002.)
+2. **El taller**: el editor del Taller en la app, con vista previa y descargas, y Mis temas. (Migración 003.)
+3. **Galería**: publicar, valorar, descargar, copiar, denunciar y bloquear. (Migración 004.)
+4. **Brubru**: dibujo, icono y pantalla de carga.
+5. **Más estilos y pegatinas**, y las ideas que Killo elija.
 
 Se fusiona solo cuando Killo diga, y después le digo qué migración ejecutar en el SQL Editor de Supabase.
-Más adelante: lo pendiente del Taller (más iconos y cursores) y, si se quiere, la app de Expo o la versión de
-Google Play (con Google Play Billing si hay pagos).
 
-## 8. Preguntas para Killo
+## 11. Preguntas para Killo
 
-1. ¿Sigue siendo web (recomendado) o la pasamos a app de Expo?
-2. ¿Te vale «¡Chacho!» como expresión de Brubru, y el nombre **Cuclynx Temas**?
-3. ¿Te parece bien que la clave pública *anon* quede en el repositorio público?
+1. ¿Creas el repositorio privado `cuclynx-temas` en GitHub? (necesario para empezar)
+2. ¿Brubru dice «¡Chacho!» u otra expresión?
+3. ¿Qué ideas del apartado 6 entran?
